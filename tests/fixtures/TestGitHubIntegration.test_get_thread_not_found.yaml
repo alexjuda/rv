@@ -1,0 +1,162 @@
+interactions:
+- request:
+    body: '{"query":"\n        query($owner: String!, $repo: String!, $branch: String!)
+      {\n            repository(owner: $owner, name: $repo) {\n                pullRequests(headRefName:
+      $branch, first: 10, states: OPEN) {\n                    nodes {\n                        number\n                        title\n                        headRefName\n                        baseRefName\n                        state\n                        url\n                    }\n                }\n            }\n        }\n        ","variables":{"owner":"alexjuda","repo":"rv-testing","branch":"test/fixtures"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - Bearer <TOKEN>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '595'
+      Content-Type:
+      - application/json
+      Host:
+      - api.github.com
+      User-Agent:
+      - python-httpx/0.28.1
+    method: POST
+    uri: https://api.github.com/graphql
+  response:
+    body:
+      string: '{"data":{"repository":{"pullRequests":{"nodes":[{"number":5,"title":"chore:
+        test fixtures for rv e2e tests","headRefName":"test/fixtures","baseRefName":"main","state":"OPEN","url":"https://github.com/alexjuda/rv-testing/pull/5"}]}}}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset, Warning
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 28 May 2026 09:08:00 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - github.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v4; format=json
+      X-GitHub-Request-Id:
+      - A506:21CE5C:41AD47E:3F091A1:6A1805F0
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4917'
+      X-RateLimit-Reset:
+      - '1779960357'
+      X-RateLimit-Resource:
+      - graphql
+      X-RateLimit-Used:
+      - '83'
+      X-XSS-Protection:
+      - '0'
+      content-length:
+      - '233'
+      github-authentication-token-expiration: 2021-01-01 09:01:01 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"query":"\n        query($owner: String!, $repo: String!, $pr: Int!) {\n            repository(owner:
+      $owner, name: $repo) {\n                pullRequest(number: $pr) {\n                    reviewThreads(first:
+      100) {\n                        nodes {\n                            id\n                            path\n                            line\n                            startLine\n                            isResolved\n                            isOutdated\n                            comments(first:
+      100) {\n                                nodes {\n                                    id\n                                    body\n                                    author
+      { login }\n                                    createdAt\n                                }\n                            }\n                        }\n                    }\n                }\n            }\n        }\n        ","variables":{"owner":"alexjuda","repo":"rv-testing","pr":5}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - Bearer <TOKEN>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '979'
+      Content-Type:
+      - application/json
+      Host:
+      - api.github.com
+      User-Agent:
+      - python-httpx/0.28.1
+    method: POST
+    uri: https://api.github.com/graphql
+  response:
+    body:
+      string: '{"data":{"repository":{"pullRequest":{"reviewThreads":{"nodes":[{"id":"PRRT_kwDOSlvxhM6FWATH","path":"calculator.py","line":19,"startLine":19,"isResolved":false,"isOutdated":false,"comments":{"nodes":[{"id":"PRRC_kwDOSlvxhM7FrnlJ","body":"Consider
+        using `math.factorial` from the standard library. It''s more readable and
+        uses optimized C code.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:17Z"}]}},{"id":"PRRT_kwDOSlvxhM6FWAUe","path":"calculator.py","line":29,"startLine":26,"isResolved":false,"isOutdated":false,"comments":{"nodes":[{"id":"PRRC_kwDOSlvxhM7Frnm-","body":"The
+        `if/elif/else` chain for the base cases could be simplified to `if n <= 1:
+        return n`.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:18Z"}]}},{"id":"PRRT_kwDOSlvxhM6FWAV4","path":"calculator.py","line":33,"startLine":33,"isResolved":true,"isOutdated":false,"comments":{"nodes":[{"id":"PRRC_kwDOSlvxhM7Frno1","body":"This
+        tuple unpacking is correct, but consider a `temp` variable for clarity.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:19Z"},{"id":"PRRC_kwDOSlvxhM7FrnrY","body":"Good
+        point, simplified.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:21Z"}]}},{"id":"PRRT_kwDOSlvxhM6FWAba","path":"calculator.py","line":23,"startLine":23,"isResolved":false,"isOutdated":false,"comments":{"nodes":[{"id":"PRRC_kwDOSlvxhM7Frnwj","body":"Should
+        add docstrings to the public functions for better tooling support.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:24Z"},{"id":"PRRC_kwDOSlvxhM7Frnyu","body":"Good
+        idea, I''ll add them.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:25Z"},{"id":"PRRC_kwDOSlvxhM7Frn0g","body":"Added
+        docstrings in the latest iteration.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:27Z"}]}}]}}}}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset, Warning
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 28 May 2026 09:08:01 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - github.com
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v4; format=json
+      X-GitHub-Request-Id:
+      - A4F8:378B46:407DFA0:3DD1374:6A1805F0
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4916'
+      X-RateLimit-Reset:
+      - '1779960357'
+      X-RateLimit-Resource:
+      - graphql
+      X-RateLimit-Used:
+      - '84'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration: 2021-01-01 09:01:01 UTC
+    status:
+      code: 200
+      message: OK
+version: 1
