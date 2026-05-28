@@ -10,10 +10,7 @@ __all__ = [
     "State",
     "ThreadFile",
     "CachePath",
-    "RV_VERSION",
 ]
-
-RV_VERSION = "0.1.0"
 
 
 @dataclass

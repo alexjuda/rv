@@ -1,4 +1,5 @@
 import click
+import importlib.metadata
 import os
 import subprocess
 from datetime import datetime, timezone
@@ -18,7 +19,7 @@ from rv.git import (
 )
 from rv.github import create_provider
 from rv.auth import login as auth_login, logout as auth_logout, auth_status
-from rv.models import Meta, PR, State, RV_VERSION
+from rv.models import Meta, PR, State
 from rv.lsp import main as lsp_main
 
 
@@ -242,6 +243,10 @@ def _find_pr_number(
     return None
 
 
+def _read_version():
+    return importlib.metadata.version("rv")
+
+
 def _do_pull(owner: str, repo: str, branch: str) -> None:
     try:
         provider = create_provider()
@@ -258,7 +263,7 @@ def _do_pull(owner: str, repo: str, branch: str) -> None:
     threads = provider.get_threads(owner, repo, pr.number)
 
     meta = Meta(
-        rv_version=RV_VERSION,
+        rv_version=_read_version(),
         synced_at=datetime.now(timezone.utc).isoformat(),
         synced_at_commit=get_current_commit(),
         pr=pr,

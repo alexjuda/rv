@@ -4,7 +4,9 @@ import pytest
 
 
 def _mangle_token_expiration(response):
-    response["headers"]["github-authentication-token-expiration"] = "2021-01-01 09:01:01 UTC"
+    response["headers"]["github-authentication-token-expiration"] = (
+        "2021-01-01 09:01:01 UTC"
+    )
     return response
 
 
