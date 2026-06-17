@@ -1,0 +1,78 @@
+interactions:
+- request:
+    body: '{"query":"\nquery($owner: String!, $repo: String!, $branch: String!) {\n  repository(owner:
+      $owner, name: $repo) {\n    pullRequests(headRefName: $branch, states: [OPEN],
+      first: 1) {\n      nodes {\n        number\n      }\n    }\n  }\n}\n","variables":{"owner":"alexjuda","repo":"rv-testing","branch":"test/fixtures"}}'
+    headers:
+      Authorization:
+      - Bearer <TOKEN>
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '319'
+      content-type:
+      - application/json
+      host:
+      - api.github.com
+      user-agent:
+      - rv
+    method: POST
+    uri: https://api.github.com/graphql
+  response:
+    body:
+      string: '{"data":{"repository":{"pullRequests":{"nodes":[{"number":5}]}}}}'
+    headers:
+      access-control-allow-origin:
+      - '*'
+      access-control-expose-headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset, Warning
+      content-length:
+      - '65'
+      content-security-policy:
+      - default-src 'none'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Mon, 29 Jun 2026 09:05:29 GMT
+      github-authentication-token-expiration: 2021-01-01 09:01:01 UTC
+      referrer-policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      server:
+      - github.com
+      strict-transport-security:
+      - max-age=31536000; includeSubdomains; preload
+      transfer-encoding:
+      - chunked
+      vary:
+      - Accept-Encoding, Accept, X-Requested-With
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - deny
+      x-github-media-type:
+      - github.v4; format=json
+      x-github-request-id:
+      - A4FA:240B3E:1915BB2A:17DCC778:6A423559
+      x-ratelimit-limit:
+      - '5000'
+      x-ratelimit-remaining:
+      - '4963'
+      x-ratelimit-reset:
+      - '1782726831'
+      x-ratelimit-resource:
+      - graphql
+      x-ratelimit-used:
+      - '37'
+      x-xss-protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

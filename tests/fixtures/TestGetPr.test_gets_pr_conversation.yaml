@@ -1,0 +1,91 @@
+interactions:
+- request:
+    body: '{"query":"\nquery($owner: String!, $repo: String!, $number: Int!) {\n  repository(owner:
+      $owner, name: $repo) {\n    pullRequest(number: $number) {\n      url\n      title\n      author
+      { login }\n      baseRefName\n      headRefName\n      state\n      headRefOid\n      comments(first:
+      100) {\n        nodes {\n          id\n          author { login }\n          body\n          createdAt\n        }\n      }\n      reviews(first:
+      100) {\n        nodes {\n          id\n          author { login }\n          body\n          createdAt\n          state\n          commit
+      { oid }\n        }\n      }\n      reviewThreads(first: 100) {\n        nodes
+      {\n          id\n          isResolved\n          path\n          line\n          comments(first:
+      100) {\n            nodes {\n              id\n              body\n              author
+      { login }\n              createdAt\n            }\n          }\n        }\n      }\n    }\n  }\n}\n","variables":{"owner":"alexjuda","repo":"rv-testing","number":5}}'
+    headers:
+      Authorization:
+      - Bearer <TOKEN>
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '999'
+      content-type:
+      - application/json
+      host:
+      - api.github.com
+      user-agent:
+      - rv
+    method: POST
+    uri: https://api.github.com/graphql
+  response:
+    body:
+      string: '{"data":{"repository":{"pullRequest":{"url":"https://github.com/alexjuda/rv-testing/pull/5","title":"chore:
+        test fixtures for rv e2e tests","author":{"login":"alexjuda"},"baseRefName":"main","headRefName":"test/fixtures","state":"OPEN","headRefOid":"b11be51163d4942f192e9f34cf7a2eb9719a2892","comments":{"nodes":[]},"reviews":{"nodes":[{"id":"PRR_kwDOSlvxhM8AAAABBQjYIg","author":{"login":"alexjuda"},"body":"","createdAt":"2026-05-28T08:57:17Z","state":"COMMENTED","commit":{"oid":"b11be51163d4942f192e9f34cf7a2eb9719a2892"}},{"id":"PRR_kwDOSlvxhM8AAAABBQjZBw","author":{"login":"alexjuda"},"body":"","createdAt":"2026-05-28T08:57:18Z","state":"COMMENTED","commit":{"oid":"b11be51163d4942f192e9f34cf7a2eb9719a2892"}},{"id":"PRR_kwDOSlvxhM8AAAABBQjZfg","author":{"login":"alexjuda"},"body":"","createdAt":"2026-05-28T08:57:19Z","state":"COMMENTED","commit":{"oid":"b11be51163d4942f192e9f34cf7a2eb9719a2892"}},{"id":"PRR_kwDOSlvxhM8AAAABBQjaZg","author":{"login":"alexjuda"},"body":"","createdAt":"2026-05-28T08:57:21Z","state":"COMMENTED","commit":{"oid":"b11be51163d4942f192e9f34cf7a2eb9719a2892"}},{"id":"PRR_kwDOSlvxhM8AAAABBQjb_w","author":{"login":"alexjuda"},"body":"","createdAt":"2026-05-28T08:57:24Z","state":"COMMENTED","commit":{"oid":"b11be51163d4942f192e9f34cf7a2eb9719a2892"}},{"id":"PRR_kwDOSlvxhM8AAAABBQjcfw","author":{"login":"alexjuda"},"body":"","createdAt":"2026-05-28T08:57:25Z","state":"COMMENTED","commit":{"oid":"b11be51163d4942f192e9f34cf7a2eb9719a2892"}},{"id":"PRR_kwDOSlvxhM8AAAABBQjdCg","author":{"login":"alexjuda"},"body":"","createdAt":"2026-05-28T08:57:27Z","state":"COMMENTED","commit":{"oid":"b11be51163d4942f192e9f34cf7a2eb9719a2892"}},{"id":"PRR_kwDOSlvxhM8AAAABDirxmw","author":{"login":"alexjuda"},"body":"","createdAt":"2026-06-19T12:03:52Z","state":"COMMENTED","commit":{"oid":"b11be51163d4942f192e9f34cf7a2eb9719a2892"}}]},"reviewThreads":{"nodes":[{"id":"PRRT_kwDOSlvxhM6FWATH","isResolved":true,"path":"calculator.py","line":19,"comments":{"nodes":[{"id":"PRRC_kwDOSlvxhM7FrnlJ","body":"Consider
+        using `math.factorial` from the standard library. It''s more readable and
+        uses optimized C code.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:17Z"},{"id":"PRRC_kwDOSlvxhM7NLeMu","body":"Will
+        do!","author":{"login":"alexjuda"},"createdAt":"2026-06-19T12:03:52Z"}]}},{"id":"PRRT_kwDOSlvxhM6FWAUe","isResolved":false,"path":"calculator.py","line":29,"comments":{"nodes":[{"id":"PRRC_kwDOSlvxhM7Frnm-","body":"The
+        `if/elif/else` chain for the base cases could be simplified to `if n <= 1:
+        return n`.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:18Z"}]}},{"id":"PRRT_kwDOSlvxhM6FWAV4","isResolved":true,"path":"calculator.py","line":33,"comments":{"nodes":[{"id":"PRRC_kwDOSlvxhM7Frno1","body":"This
+        tuple unpacking is correct, but consider a `temp` variable for clarity.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:19Z"},{"id":"PRRC_kwDOSlvxhM7FrnrY","body":"Good
+        point, simplified.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:21Z"}]}},{"id":"PRRT_kwDOSlvxhM6FWAba","isResolved":false,"path":"calculator.py","line":23,"comments":{"nodes":[{"id":"PRRC_kwDOSlvxhM7Frnwj","body":"Should
+        add docstrings to the public functions for better tooling support.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:24Z"},{"id":"PRRC_kwDOSlvxhM7Frnyu","body":"Good
+        idea, I''ll add them.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:25Z"},{"id":"PRRC_kwDOSlvxhM7Frn0g","body":"Added
+        docstrings in the latest iteration.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:27Z"}]}}]}}}}}'
+    headers:
+      access-control-allow-origin:
+      - '*'
+      access-control-expose-headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset, Warning
+      content-security-policy:
+      - default-src 'none'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Mon, 29 Jun 2026 09:05:31 GMT
+      github-authentication-token-expiration: 2021-01-01 09:01:01 UTC
+      referrer-policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      server:
+      - github.com
+      transfer-encoding:
+      - chunked
+      vary:
+      - Accept-Encoding, Accept, X-Requested-With
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - deny
+      x-github-media-type:
+      - github.v4; format=json
+      x-github-request-id:
+      - A4FC:1B4522:19B9E498:187AE358:6A42355B
+      x-ratelimit-limit:
+      - '5000'
+      x-ratelimit-remaining:
+      - '4960'
+      x-ratelimit-reset:
+      - '1782726831'
+      x-ratelimit-resource:
+      - graphql
+      x-ratelimit-used:
+      - '40'
+      x-xss-protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
