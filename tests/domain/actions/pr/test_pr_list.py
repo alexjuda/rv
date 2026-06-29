@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from unittest.mock import create_autospec
 
 from pytest import fixture
@@ -101,22 +101,32 @@ class TestBuildEntry:
 
     @staticmethod
     def test_unresolved_threads_counted():
-        thread = Thread(id="1", is_resolved=False, path="x", line=1, comments=[])
+        thread = Thread(
+            id="1", is_resolved=False, path="x", line=1, commit_sha="c", comments=[]
+        )
         entry = _build_entry(_stored(threads=[thread]))
         assert entry.n_unresolved_threads == 1
 
     @staticmethod
     def test_resolved_threads_ignored():
-        thread = Thread(id="1", is_resolved=True, path="x", line=1, comments=[])
+        thread = Thread(
+            id="1", is_resolved=True, path="x", line=1, commit_sha="c", comments=[]
+        )
         entry = _build_entry(_stored(threads=[thread]))
         assert entry.n_unresolved_threads == 0
 
     @staticmethod
     def test_multiple_unresolved_threads_summed():
         threads = [
-            Thread(id="1", is_resolved=False, path="x", line=1, comments=[]),
-            Thread(id="2", is_resolved=True, path="y", line=2, comments=[]),
-            Thread(id="3", is_resolved=False, path="z", line=3, comments=[]),
+            Thread(
+                id="1", is_resolved=False, path="x", line=1, commit_sha="c", comments=[]
+            ),
+            Thread(
+                id="2", is_resolved=True, path="y", line=2, commit_sha="d", comments=[]
+            ),
+            Thread(
+                id="3", is_resolved=False, path="z", line=3, commit_sha="e", comments=[]
+            ),
         ]
         entry = _build_entry(_stored(threads=threads))
         assert entry.n_unresolved_threads == 2
@@ -133,7 +143,7 @@ class TestBuildEntry:
                 id="1",
                 author="b",
                 body="",
-                created_at="",
+                created_at=datetime(2026, 1, 1, tzinfo=UTC),
                 state="changes_requested",
                 commit="c",
             )
@@ -145,7 +155,12 @@ class TestBuildEntry:
     def test_approved_review_state():
         reviews = [
             Review(
-                id="1", author="b", body="", created_at="", state="approved", commit="c"
+                id="1",
+                author="b",
+                body="",
+                created_at=datetime(2026, 1, 1, tzinfo=UTC),
+                state="approved",
+                commit="c",
             )
         ]
         entry = _build_entry(_stored(reviews=reviews))
@@ -158,7 +173,7 @@ class TestBuildEntry:
                 id="1",
                 author="b",
                 body="",
-                created_at="",
+                created_at=datetime(2026, 1, 1, tzinfo=UTC),
                 state="commented",
                 commit="c",
             )
@@ -173,18 +188,23 @@ class TestBuildEntry:
                 id="1",
                 author="a",
                 body="",
-                created_at="",
+                created_at=datetime(2026, 1, 1, tzinfo=UTC),
                 state="commented",
                 commit="c",
             ),
             Review(
-                id="2", author="b", body="", created_at="", state="approved", commit="c"
+                id="2",
+                author="b",
+                body="",
+                created_at=datetime(2026, 1, 1, tzinfo=UTC),
+                state="approved",
+                commit="c",
             ),
             Review(
                 id="3",
                 author="c",
                 body="",
-                created_at="",
+                created_at=datetime(2026, 1, 1, tzinfo=UTC),
                 state="changes_requested",
                 commit="c",
             ),
@@ -199,12 +219,17 @@ class TestBuildEntry:
                 id="1",
                 author="a",
                 body="",
-                created_at="",
+                created_at=datetime(2026, 1, 1, tzinfo=UTC),
                 state="commented",
                 commit="c",
             ),
             Review(
-                id="2", author="b", body="", created_at="", state="approved", commit="c"
+                id="2",
+                author="b",
+                body="",
+                created_at=datetime(2026, 1, 1, tzinfo=UTC),
+                state="approved",
+                commit="c",
             ),
         ]
         entry = _build_entry(_stored(reviews=reviews))

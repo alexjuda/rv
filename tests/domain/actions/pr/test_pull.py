@@ -6,6 +6,7 @@ from pytest import fixture, raises
 from rv.domain.actions.pull import Pull, PullUI
 from rv.domain.exceptions import GitError
 from rv.domain.models.github import (
+    PR,
     FullPR,
     PRLocator,
     RepoLocator,
@@ -182,3 +183,114 @@ class TestPull:
 
         with raises(GitError):
             await action.exec(pr_arg=None)
+
+
+class TestPullAll:
+    @staticmethod
+    async def test_empty_repo(
+        sample_repo: RepoLocator,
+        forge,
+        ui,
+        store,
+        action: Pull,
+    ):
+        forge.list_repo_prs.return_value = []
+
+        await action.exec_all(repo_arg="owner/repo")
+
+        forge.list_repo_prs.assert_called_once_with(sample_repo, closed=False)
+        store.store_pr.assert_not_called()
+        ui.ack_all_done.assert_called_once_with(0, 0)
+
+    @staticmethod
+    async def test_multiple_prs(
+        sample_repo: RepoLocator,
+        sample_pr: PR,
+        sample_full_pr: FullPR,
+        forge,
+        ui,
+        store,
+        action: Pull,
+    ):
+        forge.list_repo_prs.return_value = [sample_pr, sample_pr]
+        forge.get_pr.return_value = sample_full_pr
+
+        await action.exec_all(repo_arg="owner/repo")
+
+        assert store.store_pr.call_count == 2
+        store.store_pr.assert_any_call(sample_full_pr)
+        ui.ack_all_done.assert_called_once_with(2, 2)
+
+    @staticmethod
+    async def test_partial_failure(
+        sample_repo: RepoLocator,
+        sample_pr: PR,
+        sample_full_pr: FullPR,
+        forge,
+        ui,
+        store,
+        action: Pull,
+    ):
+        pr1 = sample_pr
+        pr2 = PR(
+            locator=PRLocator(sample_repo, 99),
+            url="",
+            title="",
+            author="",
+            base_branch="",
+            head_branch="",
+            state="open",
+            latest_commit="",
+        )
+        forge.list_repo_prs.return_value = [pr1, pr2]
+        forge.get_pr.side_effect = [sample_full_pr, None]
+
+        await action.exec_all(repo_arg="owner/repo")
+
+        assert store.store_pr.call_count == 1
+        ui.ack_all_done.assert_called_once_with(1, 2)
+
+    @staticmethod
+    async def test_infers_repo_from_git(
+        sample_repo: RepoLocator,
+        forge,
+        vcs,
+        action: Pull,
+    ):
+        forge.list_repo_prs.return_value = []
+
+        await action.exec_all(repo_arg=None)
+
+        vcs.get_origin.assert_called_once()
+        forge.parse_repo.assert_called_once_with("git@github.com/owner/repo")
+        forge.list_repo_prs.assert_called_once_with(sample_repo, closed=False)
+
+    @staticmethod
+    async def test_passes_closed_flag(
+        sample_repo: RepoLocator,
+        forge,
+        ui,
+        store,
+        action: Pull,
+    ):
+        forge.list_repo_prs.return_value = []
+
+        await action.exec_all(repo_arg="owner/repo", closed=True)
+
+        forge.list_repo_prs.assert_called_once_with(sample_repo, closed=True)
+
+    @staticmethod
+    async def test_propagates_non_domain_error(
+        sample_repo: RepoLocator,
+        sample_pr: PR,
+        sample_full_pr: FullPR,
+        forge,
+        ui,
+        store,
+        action: Pull,
+    ):
+        forge.list_repo_prs.return_value = [sample_pr]
+        forge.get_pr.side_effect = RuntimeError("network failure")
+
+        with raises(RuntimeError):
+            await action.exec_all(repo_arg="owner/repo")

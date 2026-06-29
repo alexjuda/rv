@@ -21,6 +21,7 @@ class Thread:
     is_resolved: bool
     path: str
     line: int
+    commit_sha: str
     comments: list[ThreadComment]
 
 
@@ -29,7 +30,7 @@ class PRComment:
     id: str  # opaque, provided by forge
     author: str
     body: str
-    created_at: str
+    created_at: datetime
 
 
 type ReviewState = Literal["approved", "changes_requested", "commented"]
@@ -40,7 +41,7 @@ class Review:
     id: str  # opaque, provided by forge
     author: str
     body: str
-    created_at: str
+    created_at: datetime
     state: ReviewState
     commit: str
 
@@ -58,6 +59,10 @@ class RepoLocator:
 class PRLocator:
     repo: RepoLocator
     number: int
+
+    @property
+    def full_name(self) -> str:
+        return f"{self.repo.owner}/{self.repo.repo}#{self.number}"
 
 
 @dataclass

@@ -37,6 +37,7 @@ class ThreadModel(Model):
     is_resolved = BooleanField()
     path = CharField()
     line = IntegerField()
+    commit_sha = CharField()
 
     class Meta:
         database = db
@@ -60,7 +61,7 @@ class PRCommentModel(Model):
     pr = ForeignKeyField(PRModel, backref="pr_comments", on_delete="CASCADE")
     author = CharField()
     body = TextField()
-    created_at = CharField()
+    created_at = DateTimeField()
 
     class Meta:
         database = db
@@ -72,7 +73,7 @@ class ReviewModel(Model):
     pr = ForeignKeyField(PRModel, backref="reviews", on_delete="CASCADE")
     author = CharField()
     body = TextField()
-    created_at = CharField()
+    created_at = DateTimeField()
     state = CharField()
     commit = CharField()
 

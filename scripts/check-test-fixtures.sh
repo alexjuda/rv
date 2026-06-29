@@ -81,7 +81,23 @@ else
     fail "Need at least 1 thread with replies, found $HAS_REPLIES"
 fi
 
+# Check for issue comments (PR-level conversation comments)
+ISSUE_COMMENTS=$(gh api "repos/$OWNER/$REPO/issues/$PR_NUMBER/comments" --jq 'length')
+if [ "$ISSUE_COMMENTS" -ge 1 ]; then
+    info "[PASS] $ISSUE_COMMENTS issue comment(s)"
+else
+    fail "Need at least 1 issue comment, found $ISSUE_COMMENTS"
+fi
+
+# Check for PR reviews (submitted reviews)
+PR_REVIEWS=$(gh api "repos/$OWNER/$REPO/pulls/$PR_NUMBER/reviews" --jq 'length')
+if [ "$PR_REVIEWS" -ge 1 ]; then
+    info "[PASS] $PR_REVIEWS review submission(s)"
+else
+    fail "Need at least 1 review submission, found $PR_REVIEWS"
+fi
+
 echo ""
-echo "Results: $TOTAL total, $UNRESOLVED unresolved, $RESOLVED resolved, $MULTI_LINE multi-line, $HAS_REPLIES with replies"
+echo "Results: $TOTAL threads, $UNRESOLVED unresolved, $RESOLVED resolved, $MULTI_LINE multi-line, $HAS_REPLIES with replies, $ISSUE_COMMENTS issue comments, $PR_REVIEWS reviews"
 
 exit "$FAILED"

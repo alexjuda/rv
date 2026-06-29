@@ -49,6 +49,7 @@ def thread_to_domain(t: ThreadModel) -> Thread:
         is_resolved=t.is_resolved,
         path=t.path,
         line=t.line,
+        commit_sha=t.commit_sha,
         comments=[thread_comment_to_domain(c) for c in t.comments],
     )
 

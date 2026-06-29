@@ -1,14 +1,10 @@
 interactions:
 - request:
-    body: '{"query":"\nquery($owner: String!, $repo: String!, $number: Int!) {\n  repository(owner:
-      $owner, name: $repo) {\n    pullRequest(number: $number) {\n      url\n      title\n      author
-      { login }\n      baseRefName\n      headRefName\n      state\n      headRefOid\n      comments(first:
-      100) {\n        nodes {\n          id\n          author { login }\n          body\n          createdAt\n        }\n      }\n      reviews(first:
-      100) {\n        nodes {\n          id\n          author { login }\n          body\n          createdAt\n          state\n          commit
-      { oid }\n        }\n      }\n      reviewThreads(first: 100) {\n        nodes
-      {\n          id\n          isResolved\n          path\n          line\n          comments(first:
-      100) {\n            nodes {\n              id\n              body\n              author
-      { login }\n              createdAt\n            }\n          }\n        }\n      }\n    }\n  }\n}\n","variables":{"owner":"alexjuda","repo":"rv-testing","number":99999}}'
+    body: '{"query":"\nquery($owner: String!, $repo: String!, $after: String, $states:
+      [PullRequestState!]) {\n  repository(owner: $owner, name: $repo) {\n    pullRequests(first:
+      100, states: $states, after: $after) {\n      nodes {\n        number\n        title\n        author
+      { login }\n        url\n        baseRefName\n        headRefName\n        state\n        headRefOid\n      }\n      pageInfo
+      {\n        hasNextPage\n        endCursor\n      }\n    }\n  }\n}\n","variables":{"owner":"alexjuda","repo":"rv-testing","after":null,"states":["OPEN"]}}'
     headers:
       Authorization:
       - Bearer <TOKEN>
@@ -19,7 +15,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1003'
+      - '547'
       content-type:
       - application/json
       host:
@@ -30,8 +26,8 @@ interactions:
     uri: https://api.github.com/graphql
   response:
     body:
-      string: '{"data":{"repository":{"pullRequest":null}},"errors":[{"type":"NOT_FOUND","path":["repository","pullRequest"],"locations":[{"line":4,"column":5}],"message":"Could
-        not resolve to a PullRequest with the number of 99999."}]}'
+      string: '{"data":{"repository":{"pullRequests":{"nodes":[{"number":6,"title":"chore:
+        test fixtures for rv e2e tests","author":{"login":"alexjuda"},"url":"https://github.com/alexjuda/rv-testing/pull/6","baseRefName":"main","headRefName":"test/fixtures","state":"OPEN","headRefOid":"abf05fedabf028f47f23d58b3415b7040c1e184b"}],"pageInfo":{"hasNextPage":false,"endCursor":"Y3Vyc29yOnYyOpHO7CMzIA=="}}}}}'
     headers:
       access-control-allow-origin:
       - '*'
@@ -40,17 +36,21 @@ interactions:
         X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
         X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
         X-GitHub-Request-Id, Deprecation, Sunset, Warning
+      content-length:
+      - '391'
       content-security-policy:
       - default-src 'none'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Tue, 30 Jun 2026 09:49:59 GMT
+      - Tue, 30 Jun 2026 09:50:00 GMT
       github-authentication-token-expiration: 2021-01-01 09:01:01 UTC
       referrer-policy:
       - origin-when-cross-origin, strict-origin-when-cross-origin
       server:
       - github.com
+      strict-transport-security:
+      - max-age=31536000; includeSubdomains; preload
       transfer-encoding:
       - chunked
       vary:
@@ -62,17 +62,17 @@ interactions:
       x-github-media-type:
       - github.v4; format=json
       x-github-request-id:
-      - A57A:24265D:1C23807:1AAA8B6:6A439147
+      - A4EC:5BBAD:1D8A197:1C16593:6A439147
       x-ratelimit-limit:
       - '5000'
       x-ratelimit-remaining:
-      - '4982'
+      - '4981'
       x-ratelimit-reset:
       - '1782814665'
       x-ratelimit-resource:
       - graphql
       x-ratelimit-used:
-      - '18'
+      - '19'
       x-xss-protection:
       - '0'
     status:

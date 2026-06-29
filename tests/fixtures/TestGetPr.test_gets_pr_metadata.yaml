@@ -8,7 +8,7 @@ interactions:
       { oid }\n        }\n      }\n      reviewThreads(first: 100) {\n        nodes
       {\n          id\n          isResolved\n          path\n          line\n          comments(first:
       100) {\n            nodes {\n              id\n              body\n              author
-      { login }\n              createdAt\n            }\n          }\n        }\n      }\n    }\n  }\n}\n","variables":{"owner":"alexjuda","repo":"rv-testing","number":5}}'
+      { login }\n              createdAt\n            }\n          }\n        }\n      }\n    }\n  }\n}\n","variables":{"owner":"alexjuda","repo":"rv-testing","number":6}}'
     headers:
       Authorization:
       - Bearer <TOKEN>
@@ -30,18 +30,19 @@ interactions:
     uri: https://api.github.com/graphql
   response:
     body:
-      string: '{"data":{"repository":{"pullRequest":{"url":"https://github.com/alexjuda/rv-testing/pull/5","title":"chore:
-        test fixtures for rv e2e tests","author":{"login":"alexjuda"},"baseRefName":"main","headRefName":"test/fixtures","state":"OPEN","headRefOid":"b11be51163d4942f192e9f34cf7a2eb9719a2892","comments":{"nodes":[]},"reviews":{"nodes":[{"id":"PRR_kwDOSlvxhM8AAAABBQjYIg","author":{"login":"alexjuda"},"body":"","createdAt":"2026-05-28T08:57:17Z","state":"COMMENTED","commit":{"oid":"b11be51163d4942f192e9f34cf7a2eb9719a2892"}},{"id":"PRR_kwDOSlvxhM8AAAABBQjZBw","author":{"login":"alexjuda"},"body":"","createdAt":"2026-05-28T08:57:18Z","state":"COMMENTED","commit":{"oid":"b11be51163d4942f192e9f34cf7a2eb9719a2892"}},{"id":"PRR_kwDOSlvxhM8AAAABBQjZfg","author":{"login":"alexjuda"},"body":"","createdAt":"2026-05-28T08:57:19Z","state":"COMMENTED","commit":{"oid":"b11be51163d4942f192e9f34cf7a2eb9719a2892"}},{"id":"PRR_kwDOSlvxhM8AAAABBQjaZg","author":{"login":"alexjuda"},"body":"","createdAt":"2026-05-28T08:57:21Z","state":"COMMENTED","commit":{"oid":"b11be51163d4942f192e9f34cf7a2eb9719a2892"}},{"id":"PRR_kwDOSlvxhM8AAAABBQjb_w","author":{"login":"alexjuda"},"body":"","createdAt":"2026-05-28T08:57:24Z","state":"COMMENTED","commit":{"oid":"b11be51163d4942f192e9f34cf7a2eb9719a2892"}},{"id":"PRR_kwDOSlvxhM8AAAABBQjcfw","author":{"login":"alexjuda"},"body":"","createdAt":"2026-05-28T08:57:25Z","state":"COMMENTED","commit":{"oid":"b11be51163d4942f192e9f34cf7a2eb9719a2892"}},{"id":"PRR_kwDOSlvxhM8AAAABBQjdCg","author":{"login":"alexjuda"},"body":"","createdAt":"2026-05-28T08:57:27Z","state":"COMMENTED","commit":{"oid":"b11be51163d4942f192e9f34cf7a2eb9719a2892"}},{"id":"PRR_kwDOSlvxhM8AAAABDirxmw","author":{"login":"alexjuda"},"body":"","createdAt":"2026-06-19T12:03:52Z","state":"COMMENTED","commit":{"oid":"b11be51163d4942f192e9f34cf7a2eb9719a2892"}}]},"reviewThreads":{"nodes":[{"id":"PRRT_kwDOSlvxhM6FWATH","isResolved":true,"path":"calculator.py","line":19,"comments":{"nodes":[{"id":"PRRC_kwDOSlvxhM7FrnlJ","body":"Consider
-        using `math.factorial` from the standard library. It''s more readable and
-        uses optimized C code.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:17Z"},{"id":"PRRC_kwDOSlvxhM7NLeMu","body":"Will
-        do!","author":{"login":"alexjuda"},"createdAt":"2026-06-19T12:03:52Z"}]}},{"id":"PRRT_kwDOSlvxhM6FWAUe","isResolved":false,"path":"calculator.py","line":29,"comments":{"nodes":[{"id":"PRRC_kwDOSlvxhM7Frnm-","body":"The
+      string: "{\"data\":{\"repository\":{\"pullRequest\":{\"url\":\"https://github.com/alexjuda/rv-testing/pull/6\",\"title\":\"chore:
+        test fixtures for rv e2e tests\",\"author\":{\"login\":\"alexjuda\"},\"baseRefName\":\"main\",\"headRefName\":\"test/fixtures\",\"state\":\"OPEN\",\"headRefOid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\",\"comments\":{\"nodes\":[{\"id\":\"IC_kwDOSlvxhM8AAAABIJMTKw\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"Left
+        some review feedback. Overall the changes look good!\",\"createdAt\":\"2026-06-30T08:38:44Z\"},{\"id\":\"IC_kwDOSlvxhM8AAAABIJMTdg\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"I
+        noticed tests still need to be added \u2014 are those coming in a follow-up?\",\"createdAt\":\"2026-06-30T08:38:44Z\"}]},\"reviews\":{\"nodes\":[{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsJzw\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"\",\"createdAt\":\"2026-06-30T08:38:35Z\",\"state\":\"COMMENTED\",\"commit\":{\"oid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\"}},{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsKRg\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"\",\"createdAt\":\"2026-06-30T08:38:36Z\",\"state\":\"COMMENTED\",\"commit\":{\"oid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\"}},{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsKrw\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"\",\"createdAt\":\"2026-06-30T08:38:37Z\",\"state\":\"COMMENTED\",\"commit\":{\"oid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\"}},{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsLBg\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"\",\"createdAt\":\"2026-06-30T08:38:38Z\",\"state\":\"COMMENTED\",\"commit\":{\"oid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\"}},{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsL_g\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"\",\"createdAt\":\"2026-06-30T08:38:40Z\",\"state\":\"COMMENTED\",\"commit\":{\"oid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\"}},{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsMUw\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"\",\"createdAt\":\"2026-06-30T08:38:41Z\",\"state\":\"COMMENTED\",\"commit\":{\"oid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\"}},{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsM6A\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"\",\"createdAt\":\"2026-06-30T08:38:42Z\",\"state\":\"COMMENTED\",\"commit\":{\"oid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\"}},{\"id\":\"PRR_kwDOSlvxhM8AAAABEhuQ7g\",\"author\":{\"login\":\"alexjuda2\"},\"body\":\"\",\"createdAt\":\"2026-06-30T08:44:00Z\",\"state\":\"APPROVED\",\"commit\":{\"oid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\"}}]},\"reviewThreads\":{\"nodes\":[{\"id\":\"PRRT_kwDOSlvxhM6NNhMO\",\"isResolved\":false,\"path\":\"calculator.py\",\"line\":19,\"comments\":{\"nodes\":[{\"id\":\"PRRC_kwDOSlvxhM7QdT6Y\",\"body\":\"Consider
+        using `math.factorial` from the standard library. It's more readable and uses
+        optimized C code.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:35Z\"}]}},{\"id\":\"PRRT_kwDOSlvxhM6NNhNp\",\"isResolved\":false,\"path\":\"calculator.py\",\"line\":29,\"comments\":{\"nodes\":[{\"id\":\"PRRC_kwDOSlvxhM7QdT8S\",\"body\":\"The
         `if/elif/else` chain for the base cases could be simplified to `if n <= 1:
-        return n`.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:18Z"}]}},{"id":"PRRT_kwDOSlvxhM6FWAV4","isResolved":true,"path":"calculator.py","line":33,"comments":{"nodes":[{"id":"PRRC_kwDOSlvxhM7Frno1","body":"This
-        tuple unpacking is correct, but consider a `temp` variable for clarity.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:19Z"},{"id":"PRRC_kwDOSlvxhM7FrnrY","body":"Good
-        point, simplified.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:21Z"}]}},{"id":"PRRT_kwDOSlvxhM6FWAba","isResolved":false,"path":"calculator.py","line":23,"comments":{"nodes":[{"id":"PRRC_kwDOSlvxhM7Frnwj","body":"Should
-        add docstrings to the public functions for better tooling support.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:24Z"},{"id":"PRRC_kwDOSlvxhM7Frnyu","body":"Good
-        idea, I''ll add them.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:25Z"},{"id":"PRRC_kwDOSlvxhM7Frn0g","body":"Added
-        docstrings in the latest iteration.","author":{"login":"alexjuda"},"createdAt":"2026-05-28T08:57:27Z"}]}}]}}}}}'
+        return n`.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:36Z\"}]}},{\"id\":\"PRRT_kwDOSlvxhM6NNhOo\",\"isResolved\":true,\"path\":\"calculator.py\",\"line\":33,\"comments\":{\"nodes\":[{\"id\":\"PRRC_kwDOSlvxhM7QdT9m\",\"body\":\"This
+        tuple unpacking is correct, but consider a `temp` variable for clarity.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:37Z\"},{\"id\":\"PRRC_kwDOSlvxhM7QdT-w\",\"body\":\"Good
+        point, simplified.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:38Z\"}]}},{\"id\":\"PRRT_kwDOSlvxhM6NNhRY\",\"isResolved\":false,\"path\":\"calculator.py\",\"line\":23,\"comments\":{\"nodes\":[{\"id\":\"PRRC_kwDOSlvxhM7QdUBl\",\"body\":\"Should
+        add docstrings to the public functions for better tooling support.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:40Z\"},{\"id\":\"PRRC_kwDOSlvxhM7QdUC1\",\"body\":\"Good
+        idea, I'll add them.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:41Z\"},{\"id\":\"PRRC_kwDOSlvxhM7QdUEf\",\"body\":\"Added
+        docstrings in the latest iteration.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:43Z\"}]}}]}}}}}"
     headers:
       access-control-allow-origin:
       - '*'
@@ -55,7 +56,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 29 Jun 2026 09:05:30 GMT
+      - Tue, 30 Jun 2026 09:49:58 GMT
       github-authentication-token-expiration: 2021-01-01 09:01:01 UTC
       referrer-policy:
       - origin-when-cross-origin, strict-origin-when-cross-origin
@@ -72,17 +73,17 @@ interactions:
       x-github-media-type:
       - github.v4; format=json
       x-github-request-id:
-      - A578:1A183A:1B4AA660:1A03D6B5:6A42355A
+      - A51C:2DF12E:1B4E651:19E5513:6A439145
       x-ratelimit-limit:
       - '5000'
       x-ratelimit-remaining:
-      - '4961'
+      - '4984'
       x-ratelimit-reset:
-      - '1782726831'
+      - '1782814665'
       x-ratelimit-resource:
       - graphql
       x-ratelimit-used:
-      - '39'
+      - '16'
       x-xss-protection:
       - '0'
     status:

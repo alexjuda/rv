@@ -6,9 +6,23 @@ from pathlib import Path
 import peewee
 from peewee import SqliteDatabase
 
-from ...domain.models.github import FullPR, PRLocator, Thread, ThreadComment
+from ...domain.models.github import (
+    FullPR,
+    PRComment,
+    PRLocator,
+    RepoLocator,
+    Review,
+    Thread,
+    ThreadComment,
+)
 from ...domain.models.storage import StoredPR, SyncMeta
-from ._mappers import row_to_full_pr, thread_comment_to_domain, thread_to_domain
+from ._mappers import (
+    pr_comment_to_domain,
+    review_to_domain,
+    row_to_full_pr,
+    thread_comment_to_domain,
+    thread_to_domain,
+)
 from .models import (
     MODELS,
     PRCommentModel,
@@ -88,6 +102,7 @@ class PeeweeStore:
                     is_resolved=t.is_resolved,
                     path=t.path,
                     line=t.line,
+                    commit_sha=t.commit_sha,
                 )
                 if t.comments:
                     ThreadCommentModel.insert_many(
@@ -158,6 +173,49 @@ class PeeweeStore:
         except peewee.DoesNotExist:
             return None
         return thread_comment_to_domain(row)
+
+    def get_pr_locator_for_thread(self, id: str) -> PRLocator | None:
+        try:
+            row = ThreadModel.get_by_id(id)
+        except peewee.DoesNotExist:
+            return None
+        return PRLocator(RepoLocator(row.pr.owner, row.pr.repo), row.pr.number)
+
+    def get_pr_comment(self, id: str) -> PRComment | None:
+        try:
+            row = PRCommentModel.get_by_id(id)
+        except peewee.DoesNotExist:
+            return None
+        return pr_comment_to_domain(row)
+
+    def get_review(self, id: str) -> Review | None:
+        try:
+            row = ReviewModel.get_by_id(id)
+        except peewee.DoesNotExist:
+            return None
+        return review_to_domain(row)
+
+    def get_pr_comments_matching(self, id_prefix: str) -> list[PRComment]:
+        rows = PRCommentModel.select().where(PRCommentModel.id.startswith(id_prefix))
+        return [pr_comment_to_domain(r) for r in rows]
+
+    def get_reviews_matching(self, id_prefix: str) -> list[Review]:
+        rows = ReviewModel.select().where(ReviewModel.id.startswith(id_prefix))
+        return [review_to_domain(r) for r in rows]
+
+    def get_pr_locator_for_pr_comment(self, id: str) -> PRLocator | None:
+        try:
+            row = PRCommentModel.get_by_id(id)
+        except peewee.DoesNotExist:
+            return None
+        return PRLocator(RepoLocator(row.pr.owner, row.pr.repo), row.pr.number)
+
+    def get_pr_locator_for_review(self, id: str) -> PRLocator | None:
+        try:
+            row = ReviewModel.get_by_id(id)
+        except peewee.DoesNotExist:
+            return None
+        return PRLocator(RepoLocator(row.pr.owner, row.pr.repo), row.pr.number)
 
     def list_prs(self) -> list[StoredPR]:
         rows = PRModel.select()

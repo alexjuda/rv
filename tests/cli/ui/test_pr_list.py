@@ -5,7 +5,6 @@ from pytest import CaptureFixture, fixture
 from rv.cli.ui.pr_list import TextPRListUI
 from rv.domain.models.actions import PRListEntry
 
-
 SAMPLE_DT = datetime.fromisoformat("2026-06-27T19:51:12+02:00")
 
 

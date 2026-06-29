@@ -87,3 +87,27 @@ class TestGit:
         def test_raises_error_outside_repo(git_env: Git):
             with raises(GitError, match="failed to get origin"):
                 git_env.get_origin()
+
+    class TestReadFile:
+        @staticmethod
+        def test_reads_from_working_tree(git_with_commit: Git):
+            content = git_with_commit.read_file("file.txt")
+            assert content == "hello"
+
+        @staticmethod
+        def test_returns_none_for_missing_file_in_working_tree(git_with_commit: Git):
+            content = git_with_commit.read_file("nonexistent.txt")
+            assert content is None
+
+        @staticmethod
+        def test_reads_from_commit(git_with_commit: Git):
+            commit = git_with_commit.get_current_commit()
+            content = git_with_commit.read_file("file.txt", commit=commit)
+            assert content == "hello"
+
+        @staticmethod
+        def test_returns_none_for_nonexistent_commit(git_with_commit: Git):
+            content = git_with_commit.read_file(
+                "file.txt", commit="0000000000000000000000000000000000000000"
+            )
+            assert content is None

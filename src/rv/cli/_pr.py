@@ -1,14 +1,14 @@
 import asyncio
 from typing import Annotated
 
-from typer import Argument, Typer
+from typer import Argument, Option, Typer
 
 from ..domain.actions.pr.list import PRList
 from ..domain.actions.pull import Pull
 from ._deps import CLIDeps
 from ._opt_parser import parse_pr_ref
 from .ui.pr_list import TextPRListUI
-from .ui.pull import TextPullUI
+from .ui.pull import RichPullUI
 
 app = Typer()
 
@@ -39,12 +39,39 @@ def pull(
         store=deps.store,
         vcs=deps.vcs,
         forge=deps.forge,
-        ui=TextPullUI(),
+        ui=RichPullUI(),
     )
 
     pr_arg = parse_pr_ref(pr)
 
     async def _run():
         await action.exec(pr_arg=pr_arg)
+
+    asyncio.run(_run())
+
+
+@app.command()
+def pull_all(
+    repo: Annotated[
+        str | None,
+        Argument(
+            help="owner/repo (inferred from git origin if omitted)",
+        ),
+    ] = None,
+    closed: Annotated[
+        bool,
+        Option("--closed", help="Include closed and merged PRs"),
+    ] = False,
+):
+    deps = CLIDeps()
+    action = Pull(
+        store=deps.store,
+        vcs=deps.vcs,
+        forge=deps.forge,
+        ui=RichPullUI(),
+    )
+
+    async def _run():
+        await action.exec_all(repo_arg=repo, closed=closed)
 
     asyncio.run(_run())

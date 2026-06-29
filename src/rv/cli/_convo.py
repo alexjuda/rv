@@ -1,12 +1,20 @@
+from __future__ import annotations
+
 import asyncio
+from collections.abc import Sequence
+from pathlib import Path
 from typing import Annotated
 
 from typer import Argument, Option, Typer
 
+from ..domain.actions.complete_ids import CompleteIDs
 from ..domain.actions.convo.list import ListConvo, ListConvoOpts
+from ..domain.actions.convo.show import ShowConvo
 from ._deps import CLIDeps
 from ._opt_parser import parse_pr_ref
 from .ui.convo import TextListConvoUI
+from .ui.convo_show import RichShowConvoUI
+from .ui.show import TextCompleteIDsUI
 
 app = Typer()
 
@@ -41,7 +49,7 @@ def list(
         Option(help="Show review comments"),
     ] = None,
     file: Annotated[
-        str | None,
+        Path | None,
         Option(help="Filter by file path"),
     ] = None,
 ):
@@ -67,3 +75,33 @@ def list(
         await action.exec(opts=opts)
 
     asyncio.run(_run())
+
+
+def _complete_thread_ids(prefix: str) -> Sequence[tuple[str, str]]:
+    deps = CLIDeps()
+    action = CompleteIDs(store=deps.store, ui=TextCompleteIDsUI())
+    return action.exec(prefix)
+
+
+@app.command()
+def show(
+    id: Annotated[
+        str,
+        Argument(
+            help="Thread/comment/review ID or PR ref (#42) to display",
+            autocompletion=_complete_thread_ids,
+        ),
+    ],
+    context: Annotated[
+        int,
+        Option("--context", help="Lines of code context around the comment"),
+    ] = 5,
+):
+    deps = CLIDeps()
+    action = ShowConvo(
+        store=deps.store,
+        vcs=deps.vcs,
+        forge=deps.forge,
+        ui=RichShowConvoUI(),
+    )
+    action.exec(id=id, context_lines=context)

@@ -1,4 +1,4 @@
-from ...domain.models.github import Thread, ThreadComment
+from ...domain.models.github import PRComment, Review, Thread, ThreadComment
 
 
 class TextShowUI:
@@ -26,3 +26,9 @@ class TextCompleteIDsUI:
     def format_thread_comment(self, thread_comment: ThreadComment) -> tuple[str, str]:
         comm = thread_comment
         return (comm.id, f"Comment by @{comm.author}, {comm.body[:20]}...")
+
+    def format_pr_comment(self, comment: PRComment) -> tuple[str, str]:
+        return (comment.id, f"PR comment by @{comment.author}")
+
+    def format_review(self, review: Review) -> tuple[str, str]:
+        return (review.id, f"Review by @{review.author}: {review.state}")

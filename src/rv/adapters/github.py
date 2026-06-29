@@ -82,6 +82,29 @@ query($owner: String!, $repo: String!, $number: Int!) {
 }
 """
 
+LIST_REPO_PRS_QUERY = """
+query($owner: String!, $repo: String!, $after: String, $states: [PullRequestState!]) {
+  repository(owner: $owner, name: $repo) {
+    pullRequests(first: 100, states: $states, after: $after) {
+      nodes {
+        number
+        title
+        author { login }
+        url
+        baseRefName
+        headRefName
+        state
+        headRefOid
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+"""
+
 
 class GitHub:
     def __init__(self, auth: Auth, http_client: httpx.AsyncClient | None = None):
@@ -134,6 +157,47 @@ class GitHub:
             return None
         return PRLocator(repo=repo, number=nodes[0]["number"])
 
+    async def list_repo_prs(self, repo: RepoLocator, closed: bool = False) -> list[PR]:
+        prs: list[PR] = []
+        after: str | None = None
+        states = ["OPEN", "CLOSED", "MERGED"] if closed else ["OPEN"]
+
+        while True:
+            data = await self._graphql(
+                LIST_REPO_PRS_QUERY,
+                {
+                    "owner": repo.owner,
+                    "repo": repo.repo,
+                    "after": after,
+                    "states": states,
+                },
+            )
+            pull_requests = (
+                data.get("data", {}).get("repository", {}).get("pullRequests", {})
+            )
+            nodes = pull_requests.get("nodes", [])
+
+            prs.extend(
+                PR(
+                    locator=PRLocator(repo=repo, number=node["number"]),
+                    url=node["url"],
+                    title=node["title"],
+                    author=node["author"]["login"],
+                    base_branch=node["baseRefName"],
+                    head_branch=node["headRefName"],
+                    state=node["state"].lower(),
+                    latest_commit=node["headRefOid"],
+                )
+                for node in nodes
+            )
+
+            page_info = pull_requests.get("pageInfo", {})
+            if not page_info.get("hasNextPage"):
+                break
+            after = page_info.get("endCursor")
+
+        return prs
+
     async def get_pr(self, pr: PRLocator) -> FullPR | None:
         data = await self._graphql(
             GET_PR_QUERY,
@@ -160,6 +224,7 @@ class GitHub:
                         is_resolved=t["isResolved"],
                         path=t["path"],
                         line=t["line"],
+                        commit_sha=node["headRefOid"],
                         comments=[
                             ThreadComment(
                                 id=c["id"],
@@ -177,7 +242,7 @@ class GitHub:
                         id=c["id"],
                         author=c["author"]["login"],
                         body=c["body"],
-                        created_at=c["createdAt"],
+                        created_at=datetime.fromisoformat(c["createdAt"]),
                     )
                     for c in node["comments"]["nodes"]
                 ],
@@ -186,7 +251,7 @@ class GitHub:
                         id=r["id"],
                         author=r["author"]["login"],
                         body=r["body"],
-                        created_at=r["createdAt"],
+                        created_at=datetime.fromisoformat(r["createdAt"]),
                         state=r["state"].lower(),
                         commit=r["commit"]["oid"],
                     )

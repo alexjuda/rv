@@ -72,7 +72,7 @@ class TestGitHub:
         @pytest.mark.vcr
         async def test_gets_pr_metadata(real_github: GitHub):
             repo = RepoLocator(owner="alexjuda", repo="rv-testing")
-            pr_loc = PRLocator(repo=repo, number=5)
+            pr_loc = PRLocator(repo=repo, number=6)
             result = await real_github.get_pr(pr_loc)
 
             assert result is not None
@@ -87,7 +87,7 @@ class TestGitHub:
         @pytest.mark.vcr
         async def test_gets_pr_conversation(real_github: GitHub):
             repo = RepoLocator(owner="alexjuda", repo="rv-testing")
-            result = await real_github.get_pr(PRLocator(repo=repo, number=5))
+            result = await real_github.get_pr(PRLocator(repo=repo, number=6))
             assert result is not None
 
             threads = result.convo.threads
@@ -123,3 +123,22 @@ class TestGitHub:
             pr_loc = PRLocator(repo=repo, number=99999)
             result = await real_github.get_pr(pr_loc)
             assert result is None
+
+    class TestListRepoPrs:
+        @staticmethod
+        @pytest.mark.vcr
+        async def test_lists_open_prs(real_github: GitHub):
+            repo = RepoLocator(owner="alexjuda", repo="rv-testing")
+            result = await real_github.list_repo_prs(repo)
+
+            assert isinstance(result, list)
+            if result:
+                pr = result[0]
+                assert pr.locator.number > 0
+                assert pr.title
+                assert pr.author
+                assert pr.url
+                assert pr.base_branch
+                assert pr.head_branch
+                assert pr.state == "open"
+                assert pr.latest_commit

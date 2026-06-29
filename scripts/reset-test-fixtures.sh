@@ -223,6 +223,26 @@ gh api "repos/$OWNER/$REPO/pulls/$PR_NUMBER/comments" \
   --field in_reply_to="$COMMENT_4" \
   >/dev/null || error "Failed to add second reply"
 
+# Issue comment (PR-level conversation comment)
+gh api "repos/$OWNER/$REPO/issues/$PR_NUMBER/comments" \
+  --method POST \
+  --field body="Left some review feedback. Overall the changes look good!" \
+  >/dev/null || error "Failed to create PR issue comment"
+
+# Second issue comment
+gh api "repos/$OWNER/$REPO/issues/$PR_NUMBER/comments" \
+  --method POST \
+  --field body="I noticed tests still need to be added — are those coming in a follow-up?" \
+  >/dev/null || error "Failed to create second PR issue comment"
+
+# PR review submission (approve)
+gh api "repos/$OWNER/$REPO/pulls/$PR_NUMBER/reviews" \
+  --method POST \
+  --field body="Looks good to me! The fibonacci implementation is clean." \
+  --field event="APPROVE" \
+  --field commit_id="$COMMIT_SHA" \
+  >/dev/null || error "Failed to submit PR review approval"
+
 # Re-record VCR cassettes (if tests exist)
 if [ -f "$ORIG_DIR/pyproject.toml" ] && grep -q "vcrpy\|pytest-vcr" "$ORIG_DIR/pyproject.toml" 2>/dev/null; then
     info "Re-recording VCR cassettes..."

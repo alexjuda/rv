@@ -33,17 +33,21 @@ interactions:
         X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
         X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
         X-GitHub-Request-Id, Deprecation, Sunset, Warning
+      content-length:
+      - '53'
       content-security-policy:
       - default-src 'none'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 29 Jun 2026 09:05:30 GMT
+      - Tue, 30 Jun 2026 09:49:57 GMT
       github-authentication-token-expiration: 2021-01-01 09:01:01 UTC
       referrer-policy:
       - origin-when-cross-origin, strict-origin-when-cross-origin
       server:
       - github.com
+      strict-transport-security:
+      - max-age=31536000; includeSubdomains; preload
       transfer-encoding:
       - chunked
       vary:
@@ -55,17 +59,17 @@ interactions:
       x-github-media-type:
       - github.v4; format=json
       x-github-request-id:
-      - A4E6:E715:19473764:180ECEAE:6A423559
+      - A4FA:95A3A:68D5BEA:639D0B1:6A439145
       x-ratelimit-limit:
       - '5000'
       x-ratelimit-remaining:
-      - '4962'
+      - '4985'
       x-ratelimit-reset:
-      - '1782726831'
+      - '1782814665'
       x-ratelimit-resource:
       - graphql
       x-ratelimit-used:
-      - '38'
+      - '15'
       x-xss-protection:
       - '0'
     status:

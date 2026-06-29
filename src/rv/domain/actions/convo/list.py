@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import datetime
+from pathlib import Path
 from typing import Protocol
 
 from ...exceptions import PRNotCachedError
@@ -18,7 +18,7 @@ class ListConvoOpts:
     resolved: bool | None = None
     pr_comments: bool | None = None
     reviews: bool | None = None
-    file: str | None = None
+    file: Path | None = None
 
 
 class ListConvoUI(Protocol):
@@ -28,8 +28,12 @@ class ListConvoUI(Protocol):
         """
 
 
-def _parse_created_at(raw: str) -> datetime:
-    return datetime.fromisoformat(raw)
+def _path_matches(thread_path: str, filter_path: Path) -> bool:
+    path_str = str(filter_path)
+    if thread_path == path_str:
+        return True
+    prefix = path_str.rstrip("/") + "/"
+    return thread_path.startswith(prefix)
 
 
 def _build_thread_summary(thread: "Thread") -> ThreadSummary:
@@ -68,6 +72,8 @@ class ListConvo:
 
         entries: list[ListEntry] = []
         for thread in convo.threads:
+            if opts.file is not None and not _path_matches(thread.path, opts.file):
+                continue
             if thread.is_resolved:
                 if not filters.resolved:
                     continue
@@ -99,7 +105,7 @@ class ListConvo:
                     state=None,
                     body_excerpt=comment.body,
                     thread_summary=None,
-                    created_at=_parse_created_at(comment.created_at),
+                    created_at=comment.created_at,
                 )
                 for comment in convo.pr_comments
             )
@@ -113,7 +119,7 @@ class ListConvo:
                     state=review.state,
                     body_excerpt=review.body,
                     thread_summary=None,
-                    created_at=_parse_created_at(review.created_at),
+                    created_at=review.created_at,
                 )
                 for review in convo.reviews
             )
@@ -128,18 +134,17 @@ class ListConvo:
             return _ActiveFilters(
                 unresolved=True,
                 resolved=True,
-                pr_comments=True,
-                reviews=True,
+                pr_comments=opts.file is None,
+                reviews=opts.file is None,
             )
 
         return _ActiveFilters(
             unresolved=True if opts.unresolved is None else opts.unresolved,
             resolved=False if opts.resolved is None else opts.resolved,
-            pr_comments=False if opts.pr_comments is None else opts.pr_comments,
-            reviews=False if opts.reviews is None else opts.reviews,
-            **(
-                {"pr_comments": False, "reviews": False}
-                if opts.file is not None
-                else {}
-            ),
+            pr_comments=False
+            if opts.file is not None
+            else (False if opts.pr_comments is None else opts.pr_comments),
+            reviews=False
+            if opts.file is not None
+            else (False if opts.reviews is None else opts.reviews),
         )

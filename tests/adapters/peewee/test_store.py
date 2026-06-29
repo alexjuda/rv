@@ -81,6 +81,7 @@ class TestPeeweeStore:
                             is_resolved=False,
                             path="a.py",
                             line=1,
+                            commit_sha="abc",
                             comments=[],
                         ),
                         Thread(
@@ -88,10 +89,16 @@ class TestPeeweeStore:
                             is_resolved=False,
                             path="a.py",
                             line=2,
+                            commit_sha="abc",
                             comments=[],
                         ),
                         Thread(
-                            id="b-1", is_resolved=True, path="b.py", line=1, comments=[]
+                            id="b-1",
+                            is_resolved=True,
+                            path="b.py",
+                            line=1,
+                            commit_sha="abc",
+                            comments=[],
                         ),
                     ],
                     pr_comments=[],
@@ -134,6 +141,7 @@ class TestPeeweeStore:
                             is_resolved=False,
                             path="a.py",
                             line=1,
+                            commit_sha="abc",
                             comments=[
                                 ThreadComment(
                                     id="c-1", body="x", author="me", created_at=now
@@ -202,3 +210,16 @@ class TestPeeweeStore:
             store.store_pr(sample_full_pr)
             assert store.count_threads_prs(resolved=False) == (1, 1)
             assert store.count_threads_prs(resolved=True) == (0, 0)
+
+    class TestGetPRLocatorForThread:
+        @staticmethod
+        def test_returns_none_for_nonexistent_thread(store: PeeweeStore):
+            assert store.get_pr_locator_for_thread("nonexistent") is None
+
+        @staticmethod
+        def test_returns_locator_for_stored_thread(
+            store: PeeweeStore, sample_full_pr: FullPR
+        ):
+            store.store_pr(sample_full_pr)
+            loc = store.get_pr_locator_for_thread("PR_1")
+            assert loc == sample_full_pr.pr.locator

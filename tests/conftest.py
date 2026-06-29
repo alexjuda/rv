@@ -59,6 +59,7 @@ def sample_thread(sample_thread_comment: ThreadComment):
         is_resolved=False,
         path="src/hello.py",
         line=10,
+        commit_sha="deadbeef",
         comments=[sample_thread_comment],
     )
 

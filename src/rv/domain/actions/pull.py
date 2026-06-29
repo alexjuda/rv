@@ -1,8 +1,8 @@
 from typing import Protocol
 
-from ..exceptions import PRNotFoundError
+from ..exceptions import DomainError, PRNotFoundError
 from ..models.actions import CollectionStat, ConversationStat, PullSummary
-from ..models.github import FullPR, PRLocator
+from ..models.github import FullPR, PRLocator, RepoLocator
 from ..ports import VCS, Forge, Store
 from ._resolve import resolve_pr_loc
 from ._stat import convo_stat
@@ -32,6 +32,16 @@ class PullUI(Protocol):
         Tell the user that the PR was stored. And show summary.
         """
         ...
+
+    def fetching_pr_list(self, repo: RepoLocator):
+        """
+        Notify that we're listing PRs for a repo.
+        """
+
+    def ack_all_done(self, ok: int, total: int):
+        """
+        Tell the user that the batch pull is complete.
+        """
 
 
 class Pull:
@@ -68,6 +78,26 @@ class Pull:
             self._ui.ack_summary(summary)
 
         self._store.store_pr(pulled_pr)
+
+    async def exec_all(self, repo_arg: str | None = None, closed: bool = False) -> None:
+        repo = (
+            self._forge.parse_repo(f"github.com/{repo_arg}")
+            if repo_arg
+            else self._forge.parse_repo(self._vcs.get_origin())
+        )
+
+        self._ui.fetching_pr_list(repo)
+        prs = await self._forge.list_repo_prs(repo, closed=closed)
+
+        ok = 0
+        for pr_meta in prs:
+            try:
+                await self.exec(pr_arg=PRLocator(repo, pr_meta.locator.number))
+                ok += 1
+            except DomainError:
+                pass
+
+        self._ui.ack_all_done(ok, len(prs))
 
     @classmethod
     def _all_new_pr_stat(cls, pr: FullPR) -> ConversationStat:
