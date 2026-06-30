@@ -86,7 +86,7 @@ class StatusSummary:
 class PRListEntry:
     pr_number: int
     title: str
-    author: str
+    author: str | None
     n_unresolved_threads: int
 
     effective_review_state: ReviewState | None

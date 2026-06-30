@@ -23,7 +23,7 @@ _SAMPLE_DT = datetime.fromisoformat("2026-06-27T19:51:12+02:00")
 def _stored(
     number: int = 42,
     title: str = "title",
-    author: str = "",
+    author: str | None = None,
     state: PRState = "open",
     threads: list[Thread] | None = None,
     reviews: list[Review] | None = None,
@@ -79,9 +79,9 @@ class TestBuildEntry:
         assert entry.author == "alice"
 
     @staticmethod
-    def test_author_empty_when_missing():
+    def test_author_none_when_missing():
         entry = _build_entry(_stored())
-        assert entry.author == ""
+        assert entry.author is None
 
     @staticmethod
     def test_pr_number_and_title():

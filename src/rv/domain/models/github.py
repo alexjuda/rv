@@ -11,7 +11,7 @@ from typing import Literal
 class ThreadComment:
     id: str  # opaque, provided by forge
     body: str
-    author: str
+    author: str | None
     created_at: datetime
 
 
@@ -19,8 +19,8 @@ class ThreadComment:
 class Thread:
     id: str  # opaque, provided by forge
     is_resolved: bool
-    path: str
-    line: int
+    path: str | None
+    line: int | None
     commit_sha: str
     comments: list[ThreadComment]
 
@@ -28,7 +28,7 @@ class Thread:
 @dataclass
 class PRComment:
     id: str  # opaque, provided by forge
-    author: str
+    author: str | None
     body: str
     created_at: datetime
 
@@ -39,11 +39,11 @@ type ReviewState = Literal["approved", "changes_requested", "commented"]
 @dataclass
 class Review:
     id: str  # opaque, provided by forge
-    author: str
+    author: str | None
     body: str
     created_at: datetime
     state: ReviewState
-    commit: str
+    commit: str | None
 
 
 type PRState = Literal["open", "closed", "merged"]
@@ -70,7 +70,7 @@ class PR:
     locator: PRLocator
     url: str
     title: str
-    author: str
+    author: str | None
     base_branch: str
     head_branch: str
     state: PRState

@@ -103,6 +103,8 @@ class ShowConvo:
         )
 
     def _load_code_context(self, thread: Thread, n: int) -> CodeContext | None:
+        if thread.path is None or thread.line is None:
+            return None
         content = self._vcs.read_file(thread.path, thread.commit_sha)
         if content is None:
             return None

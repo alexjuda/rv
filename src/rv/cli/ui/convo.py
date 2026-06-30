@@ -2,6 +2,7 @@ from collections.abc import Sequence
 
 from rich.console import Console
 from rich.table import Table
+from rich.text import Text
 
 from ...domain.models.convo import ListEntry, ListEntryState, ThreadSummary
 
@@ -22,7 +23,7 @@ class TextListConvoUI:
             table.add_row(
                 entry.id,
                 entry.location,
-                entry.author,
+                Text(entry.author) if entry.author is not None else Text("[deleted]"),
                 self._format_state(entry.state),
                 entry.body_excerpt[:60],
                 self._format_thread(entry.thread_summary),

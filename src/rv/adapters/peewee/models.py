@@ -18,7 +18,7 @@ class PRModel(Model):
     number = IntegerField()
     url = CharField()
     title = CharField()
-    author = CharField()
+    author = CharField(null=True)
     base_branch = CharField()
     head_branch = CharField()
     state = CharField()
@@ -35,8 +35,8 @@ class ThreadModel(Model):
     id = CharField(primary_key=True)
     pr = ForeignKeyField(PRModel, backref="threads", on_delete="CASCADE")
     is_resolved = BooleanField()
-    path = CharField()
-    line = IntegerField()
+    path = CharField(null=True)
+    line = IntegerField(null=True)
     commit_sha = CharField()
 
     class Meta:
@@ -48,7 +48,7 @@ class ThreadCommentModel(Model):
     id = CharField(primary_key=True)
     thread = ForeignKeyField(ThreadModel, backref="comments", on_delete="CASCADE")
     body = TextField()
-    author = CharField()
+    author = CharField(null=True)
     created_at = DateTimeField()
 
     class Meta:
@@ -59,7 +59,7 @@ class ThreadCommentModel(Model):
 class PRCommentModel(Model):
     id = CharField(primary_key=True)
     pr = ForeignKeyField(PRModel, backref="pr_comments", on_delete="CASCADE")
-    author = CharField()
+    author = CharField(null=True)
     body = TextField()
     created_at = DateTimeField()
 
@@ -71,11 +71,11 @@ class PRCommentModel(Model):
 class ReviewModel(Model):
     id = CharField(primary_key=True)
     pr = ForeignKeyField(PRModel, backref="reviews", on_delete="CASCADE")
-    author = CharField()
+    author = CharField(null=True)
     body = TextField()
     created_at = DateTimeField()
     state = CharField()
-    commit = CharField()
+    commit = CharField(null=True)
 
     class Meta:
         database = db

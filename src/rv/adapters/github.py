@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-from typing import Self
+from typing import Self, cast
 
 import httpx
 
@@ -11,12 +11,22 @@ from ..domain.models.github import (
     PRComment,
     PRConversation,
     PRLocator,
+    PRState,
     RepoLocator,
     Review,
+    ReviewState,
     Thread,
     ThreadComment,
 )
 from ..domain.ports import Auth
+from .github_models import (
+    _GHFindPRData,
+    _GHFullPR,
+    _GHFullPRData,
+    _GHGraphQLEnvelope,
+    _GHPRListData,
+    _GHPRNode,
+)
 
 GRAPHQL_API = "https://api.github.com/graphql"
 
@@ -106,6 +116,10 @@ query($owner: String!, $repo: String!, $after: String, $states: [PullRequestStat
 """
 
 
+class GitHubAPIError(Exception):
+    """GitHub API response validation failed."""
+
+
 class GitHub:
     def __init__(self, auth: Auth, http_client: httpx.AsyncClient | None = None):
         self._auth = auth
@@ -129,7 +143,14 @@ class GitHub:
             },
         )
         resp.raise_for_status()
-        return resp.json()
+        raw = resp.json()
+        envelope = _GHGraphQLEnvelope.model_validate(raw)
+        if envelope.data is None:
+            if envelope.errors:
+                msgs = "; ".join(e.message for e in envelope.errors)
+                raise GitHubAPIError(f"GitHub API errors: {msgs}")
+            raise GitHubAPIError("GitHub API returned no data")
+        return envelope.data
 
     async def aclose(self) -> None:
         await self._http.aclose()
@@ -147,15 +168,13 @@ class GitHub:
             FIND_PR_QUERY,
             {"owner": repo.owner, "repo": repo.repo, "branch": branch},
         )
-        nodes = (
-            data.get("data", {})
-            .get("repository", {})
-            .get("pullRequests", {})
-            .get("nodes", [])
-        )
-        if not nodes:
+        parsed = _GHFindPRData.model_validate(data)
+        if parsed.repository is None:
             return None
-        return PRLocator(repo=repo, number=nodes[0]["number"])
+        prs = parsed.repository.pullRequests
+        if prs is None or not prs.nodes:
+            return None
+        return PRLocator(repo=repo, number=prs.nodes[0].number)
 
     async def list_repo_prs(self, repo: RepoLocator, closed: bool = False) -> list[PR]:
         prs: list[PR] = []
@@ -172,90 +191,114 @@ class GitHub:
                     "states": states,
                 },
             )
-            pull_requests = (
-                data.get("data", {}).get("repository", {}).get("pullRequests", {})
-            )
-            nodes = pull_requests.get("nodes", [])
-
-            prs.extend(
-                PR(
-                    locator=PRLocator(repo=repo, number=node["number"]),
-                    url=node["url"],
-                    title=node["title"],
-                    author=node["author"]["login"],
-                    base_branch=node["baseRefName"],
-                    head_branch=node["headRefName"],
-                    state=node["state"].lower(),
-                    latest_commit=node["headRefOid"],
-                )
-                for node in nodes
-            )
-
-            page_info = pull_requests.get("pageInfo", {})
-            if not page_info.get("hasNextPage"):
+            parsed = _GHPRListData.model_validate(data)
+            if parsed.repository is None:
                 break
-            after = page_info.get("endCursor")
+            pull_requests = parsed.repository.pullRequests
+            if pull_requests is None:
+                break
+            nodes = pull_requests.nodes or []
+
+            prs.extend(self._to_domain_pr(repo, node) for node in nodes)
+
+            page_info = pull_requests.pageInfo
+            if page_info is None or not page_info.hasNextPage:
+                break
+            after = page_info.endCursor
 
         return prs
+
+    def _to_domain_pr(self, repo: RepoLocator, node: _GHPRNode) -> PR:
+        return PR(
+            locator=PRLocator(repo=repo, number=node.number),
+            url=node.url,
+            title=node.title,
+            author=node.author.login if node.author else None,
+            base_branch=node.baseRefName,
+            head_branch=node.headRefName,
+            state=cast(PRState, node.state.lower()),
+            latest_commit=node.headRefOid,
+        )
 
     async def get_pr(self, pr: PRLocator) -> FullPR | None:
         data = await self._graphql(
             GET_PR_QUERY,
             {"owner": pr.repo.owner, "repo": pr.repo.repo, "number": pr.number},
         )
-        node = data.get("data", {}).get("repository", {}).get("pullRequest")
-        if not node:
+        parsed = _GHFullPRData.model_validate(data)
+        if parsed.repository is None or parsed.repository.pullRequest is None:
             return None
+        gh_pr = parsed.repository.pullRequest
         return FullPR(
             pr=PR(
                 locator=pr,
-                url=node["url"],
-                title=node["title"],
-                author=node["author"]["login"],
-                base_branch=node["baseRefName"],
-                head_branch=node["headRefName"],
-                state=node["state"].lower(),
-                latest_commit=node["headRefOid"],
+                url=gh_pr.url,
+                title=gh_pr.title,
+                author=gh_pr.author.login if gh_pr.author else None,
+                base_branch=gh_pr.baseRefName,
+                head_branch=gh_pr.headRefName,
+                state=cast(PRState, gh_pr.state.lower()),
+                latest_commit=gh_pr.headRefOid,
             ),
             convo=PRConversation(
-                threads=[
-                    Thread(
-                        id=t["id"],
-                        is_resolved=t["isResolved"],
-                        path=t["path"],
-                        line=t["line"],
-                        commit_sha=node["headRefOid"],
-                        comments=[
-                            ThreadComment(
-                                id=c["id"],
-                                body=c["body"],
-                                author=c["author"]["login"],
-                                created_at=datetime.fromisoformat(c["createdAt"]),
-                            )
-                            for c in t["comments"]["nodes"]
-                        ],
-                    )
-                    for t in node["reviewThreads"]["nodes"]
-                ],
-                pr_comments=[
-                    PRComment(
-                        id=c["id"],
-                        author=c["author"]["login"],
-                        body=c["body"],
-                        created_at=datetime.fromisoformat(c["createdAt"]),
-                    )
-                    for c in node["comments"]["nodes"]
-                ],
-                reviews=[
-                    Review(
-                        id=r["id"],
-                        author=r["author"]["login"],
-                        body=r["body"],
-                        created_at=datetime.fromisoformat(r["createdAt"]),
-                        state=r["state"].lower(),
-                        commit=r["commit"]["oid"],
-                    )
-                    for r in node["reviews"]["nodes"]
-                ],
+                threads=self._build_threads(gh_pr),
+                pr_comments=self._build_pr_comments(gh_pr),
+                reviews=self._build_reviews(gh_pr),
             ),
         )
+
+    def _build_threads(self, gh_pr: _GHFullPR) -> list[Thread]:
+        threads = gh_pr.reviewThreads
+        if threads is None or threads.nodes is None:
+            return []
+        return [
+            Thread(
+                id=t.id,
+                is_resolved=t.isResolved or False,
+                path=t.path,
+                line=t.line,
+                commit_sha=gh_pr.headRefOid,
+                comments=[
+                    ThreadComment(
+                        id=c.id,
+                        body=c.body,
+                        author=c.author.login if c.author else None,
+                        created_at=datetime.fromisoformat(c.createdAt),
+                    )
+                    for c in (
+                        t.comments.nodes if t.comments and t.comments.nodes else []
+                    )
+                ],
+            )
+            for t in threads.nodes
+        ]
+
+    def _build_pr_comments(self, gh_pr: _GHFullPR) -> list[PRComment]:
+        comments = gh_pr.comments
+        if comments is None or comments.nodes is None:
+            return []
+        return [
+            PRComment(
+                id=c.id,
+                author=c.author.login if c.author else None,
+                body=c.body,
+                created_at=datetime.fromisoformat(c.createdAt),
+            )
+            for c in comments.nodes
+        ]
+
+    def _build_reviews(self, gh_pr: _GHFullPR) -> list[Review]:
+        reviews = gh_pr.reviews
+        if reviews is None or reviews.nodes is None:
+            return []
+        return [
+            Review(
+                id=r.id,
+                author=r.author.login if r.author else None,
+                body=r.body,
+                created_at=datetime.fromisoformat(r.createdAt),
+                state=cast(ReviewState, r.state.lower()),
+                commit=r.commit.oid if r.commit else None,
+            )
+            for r in reviews.nodes
+        ]

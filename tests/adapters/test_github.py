@@ -1,11 +1,12 @@
 import os
-from unittest.mock import create_autospec
+from unittest.mock import AsyncMock, Mock, create_autospec
 
+import httpx
 import pytest
 import pytest_asyncio
 from pytest import fixture, raises
 
-from rv.adapters.github import GitHub
+from rv.adapters.github import GitHub, GitHubAPIError
 from rv.domain.exceptions import InvalidOriginError
 from rv.domain.models.github import PRLocator, RepoLocator
 from rv.domain.ports import Auth
@@ -24,6 +25,16 @@ async def real_github():
     auth.get_token.return_value = os.environ.get("GITHUB_TOKEN", "test")
     async with GitHub(auth=auth) as gh:
         yield gh
+
+
+def _mock_graphql_client(json_response: dict) -> httpx.AsyncClient:
+    mock_resp = Mock(spec=httpx.Response)
+    mock_resp.raise_for_status = Mock()
+    mock_resp.json = Mock(return_value=json_response)
+
+    mock_client = create_autospec(httpx.AsyncClient, instance=True)
+    mock_client.post = AsyncMock(return_value=mock_resp)
+    return mock_client
 
 
 class TestGitHub:
@@ -142,3 +153,46 @@ class TestGitHub:
                 assert pr.head_branch
                 assert pr.state == "open"
                 assert pr.latest_commit
+
+    class TestGraphQLErrors:
+        @staticmethod
+        async def test_raises_on_errors_without_data():
+            auth = create_autospec(Auth)
+            auth.get_token.return_value = "token"
+            client = _mock_graphql_client(
+                {
+                    "data": None,
+                    "errors": [{"message": "Not found", "type": "NOT_FOUND"}],
+                }
+            )
+            gh = GitHub(auth=auth, http_client=client)
+            with raises(GitHubAPIError, match="GitHub API errors"):
+                await gh.find_pr_for_branch(RepoLocator(owner="o", repo="r"), "branch")
+            await gh.aclose()
+
+        @staticmethod
+        async def test_raises_on_no_data():
+            auth = create_autospec(Auth)
+            auth.get_token.return_value = "token"
+            client = _mock_graphql_client({"data": None})
+            gh = GitHub(auth=auth, http_client=client)
+            with raises(GitHubAPIError, match="no data"):
+                await gh.find_pr_for_branch(RepoLocator(owner="o", repo="r"), "branch")
+            await gh.aclose()
+
+        @staticmethod
+        async def test_returns_none_on_partial_results():
+            auth = create_autospec(Auth)
+            auth.get_token.return_value = "token"
+            client = _mock_graphql_client(
+                {
+                    "data": {"repository": {"pullRequests": {"nodes": []}}},
+                    "errors": [{"message": "irrelevant warning"}],
+                }
+            )
+            gh = GitHub(auth=auth, http_client=client)
+            result = await gh.find_pr_for_branch(
+                RepoLocator(owner="o", repo="r"), "branch"
+            )
+            assert result is None
+            await gh.aclose()

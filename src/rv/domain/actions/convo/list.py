@@ -40,7 +40,7 @@ def _build_thread_summary(thread: "Thread") -> ThreadSummary:
     replies = thread.comments[1:]
     seen: list[str] = []
     for c in replies:
-        if c.author not in seen:
+        if c.author is not None and c.author not in seen:
             seen.append(c.author)
     return ThreadSummary(n_replies=len(replies), reply_authors=seen)
 
@@ -72,7 +72,9 @@ class ListConvo:
 
         entries: list[ListEntry] = []
         for thread in convo.threads:
-            if opts.file is not None and not _path_matches(thread.path, opts.file):
+            if opts.file is not None and (
+                thread.path is None or not _path_matches(thread.path, opts.file)
+            ):
                 continue
             if thread.is_resolved:
                 if not filters.resolved:

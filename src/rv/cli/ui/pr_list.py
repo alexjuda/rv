@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 
 import humanize
 from rich.console import Console
+from rich.style import Style
 from rich.table import Table
 from rich.text import Text
 
@@ -25,7 +26,9 @@ class TextPRListUI:
             table.add_row(
                 f"#{entry.pr_number}",
                 entry.title,
-                entry.author,
+                Text(entry.author, style=Style(dim=True))
+                if entry.author is not None
+                else Text("[deleted]", style=Style(dim=True)),
                 self.summary(entry),
                 self.sync_status(entry),
             )

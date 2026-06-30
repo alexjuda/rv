@@ -18,7 +18,7 @@ class ThreadSummary:
 class ListEntry:
     id: str
     location: str
-    author: str
+    author: str | None
     state: ListEntryState
     body_excerpt: str
     thread_summary: ThreadSummary | None
