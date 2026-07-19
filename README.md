@@ -14,7 +14,7 @@ make test
 ## Integration Tests
 
 Integration tests in `tests/test_integration_github.py` use `pytest-recording`
-(which wraps VCR.py) to record and replay HTTP interactions against
+to record and replay HTTP interactions against
 [`alexjuda/rv-testing`](https://github.com/alexjuda/rv-testing), a private repo.
 By default tests replay from cassettes in `tests/fixtures/`, bypassing any real
 network access.
@@ -26,9 +26,11 @@ To re-record the fixtures:
    access to the private testing repo. If the repo state needs refreshing, run
    `scripts/reset-test-fixtures.sh`.
 
-2. Run the tests with `--record-mode=once` and a valid `GITHUB_TOKEN` env var.
-   It should be a PAT, scoped to `repo` access in `alexjuda/rv-testing`.
+2. Remove the recorded cassettes and run the tests with `--record-mode=once` and
+   a valid `GITHUB_TOKEN` env var. It should be a PAT, scoped to `repo` access
+   in `alexjuda/rv-testing`.
 
     ```bash
+    rm -r tests/fixtures
     GITHUB_TOKEN=ghp_... uv run pytest tests/ --record-mode=once
     ```

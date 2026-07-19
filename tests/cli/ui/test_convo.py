@@ -1,0 +1,92 @@
+from datetime import datetime
+
+from pytest import CaptureFixture, fixture
+
+from rv.cli.ui.convo import TextListConvoUI
+from rv.domain.models.convo import ListEntry, ThreadSummary
+
+
+@fixture
+def ui():
+    return TextListConvoUI()
+
+
+SAMPLE_TS = datetime.fromisoformat("2026-06-27T19:51:12+02:00")
+
+
+class TestTextListConvoUI:
+    class TestShowList:
+        @staticmethod
+        def test_entry_no_thread_summary(ui: TextListConvoUI, capsys: CaptureFixture):
+            entries = [
+                ListEntry(
+                    id="1",
+                    location="src/main.py:10",
+                    author="alice",
+                    state="unresolved",
+                    body_excerpt="Fix this bug",
+                    thread_summary=None,
+                    created_at=SAMPLE_TS,
+                ),
+            ]
+            ui.show_list(entries)
+            out = capsys.readouterr().out
+            assert "1" in out
+            assert "src/main.py:10" in out
+            assert "alice" in out
+            assert "unresolved" in out
+            assert "Fix this bug" in out
+
+        @staticmethod
+        def test_entry_with_thread_summary(ui: TextListConvoUI, capsys: CaptureFixture):
+            entries = [
+                ListEntry(
+                    id="1",
+                    location="src/lib.py:42",
+                    author="bob",
+                    state="resolved",
+                    body_excerpt="Done",
+                    thread_summary=ThreadSummary(n_replies=3, reply_authors=["carol"]),
+                    created_at=SAMPLE_TS,
+                ),
+            ]
+            ui.show_list(entries)
+            out = capsys.readouterr().out
+            assert "resolved" in out
+            assert "3" in out
+
+        @staticmethod
+        def test_pr_comment_entry(ui: TextListConvoUI, capsys: CaptureFixture):
+            entries = [
+                ListEntry(
+                    id="3",
+                    location="(general)",
+                    author="carol",
+                    state=None,
+                    body_excerpt="General comment",
+                    thread_summary=None,
+                    created_at=SAMPLE_TS,
+                ),
+            ]
+            ui.show_list(entries)
+            out = capsys.readouterr().out
+            assert "(general)" in out
+            assert "carol" in out
+
+        @staticmethod
+        def test_changes_requested_state(ui: TextListConvoUI):
+            assert ui._format_state("changes_requested") == "changes requested"
+
+        @staticmethod
+        def test_none_state(ui: TextListConvoUI):
+            assert ui._format_state(None) == ""
+
+        @staticmethod
+        def test_format_thread_none(ui: TextListConvoUI):
+            assert ui._format_thread(None) == ""
+
+        @staticmethod
+        def test_format_thread_with_replies(ui: TextListConvoUI):
+            assert (
+                ui._format_thread(ThreadSummary(n_replies=5, reply_authors=[])) == "5"
+            )

@@ -1,0 +1,81 @@
+interactions:
+- request:
+    body: '{"query":"\nquery($owner: String!, $repo: String!, $after: String, $states:
+      [PullRequestState!]) {\n  repository(owner: $owner, name: $repo) {\n    pullRequests(first:
+      100, states: $states, after: $after) {\n      nodes {\n        number\n        title\n        author
+      { login }\n        url\n        baseRefName\n        headRefName\n        state\n        headRefOid\n      }\n      pageInfo
+      {\n        hasNextPage\n        endCursor\n      }\n    }\n  }\n}\n","variables":{"owner":"alexjuda","repo":"rv-testing","after":null,"states":["OPEN"]}}'
+    headers:
+      Authorization:
+      - Bearer <TOKEN>
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '547'
+      content-type:
+      - application/json
+      host:
+      - api.github.com
+      user-agent:
+      - rv
+    method: POST
+    uri: https://api.github.com/graphql
+  response:
+    body:
+      string: '{"data":{"repository":{"pullRequests":{"nodes":[{"number":6,"title":"chore:
+        test fixtures for rv e2e tests","author":{"login":"alexjuda"},"url":"https://github.com/alexjuda/rv-testing/pull/6","baseRefName":"main","headRefName":"test/fixtures","state":"OPEN","headRefOid":"abf05fedabf028f47f23d58b3415b7040c1e184b"}],"pageInfo":{"hasNextPage":false,"endCursor":"Y3Vyc29yOnYyOpHO7CMzIA=="}}}}}'
+    headers:
+      access-control-allow-origin:
+      - '*'
+      access-control-expose-headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset, Warning
+      content-length:
+      - '391'
+      content-security-policy:
+      - default-src 'none'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Tue, 30 Jun 2026 09:50:00 GMT
+      github-authentication-token-expiration: 2021-01-01 09:01:01 UTC
+      referrer-policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      server:
+      - github.com
+      strict-transport-security:
+      - max-age=31536000; includeSubdomains; preload
+      transfer-encoding:
+      - chunked
+      vary:
+      - Accept-Encoding, Accept, X-Requested-With
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - deny
+      x-github-media-type:
+      - github.v4; format=json
+      x-github-request-id:
+      - A4EC:5BBAD:1D8A197:1C16593:6A439147
+      x-ratelimit-limit:
+      - '5000'
+      x-ratelimit-remaining:
+      - '4981'
+      x-ratelimit-reset:
+      - '1782814665'
+      x-ratelimit-resource:
+      - graphql
+      x-ratelimit-used:
+      - '19'
+      x-xss-protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
