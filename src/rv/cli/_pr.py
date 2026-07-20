@@ -10,7 +10,7 @@ from ._opt_parser import parse_pr_ref
 from .ui.pr_list import TextPRListUI
 from .ui.pull import RichPullUI
 
-app = Typer()
+app = Typer(no_args_is_help=True)
 
 
 @app.command()
