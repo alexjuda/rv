@@ -172,7 +172,7 @@ class GitHub:
         if parsed.repository is None:
             return None
         prs = parsed.repository.pullRequests
-        if prs is None or not prs.nodes:
+        if not prs.nodes:
             return None
         return PRLocator(repo=repo, number=prs.nodes[0].number)
 
@@ -195,16 +195,13 @@ class GitHub:
             if parsed.repository is None:
                 break
             pull_requests = parsed.repository.pullRequests
-            if pull_requests is None:
-                break
             nodes = pull_requests.nodes or []
 
             prs.extend(self._to_domain_pr(repo, node) for node in nodes)
 
-            page_info = pull_requests.pageInfo
-            if page_info is None or not page_info.hasNextPage:
+            if not pull_requests.pageInfo.hasNextPage:
                 break
-            after = page_info.endCursor
+            after = pull_requests.pageInfo.endCursor
 
         return prs
 
@@ -249,12 +246,12 @@ class GitHub:
 
     def _build_threads(self, gh_pr: _GHFullPR) -> list[Thread]:
         threads = gh_pr.reviewThreads
-        if threads is None or threads.nodes is None:
+        if threads.nodes is None:
             return []
         return [
             Thread(
                 id=t.id,
-                is_resolved=t.isResolved or False,
+                is_resolved=t.isResolved,
                 path=t.path,
                 line=t.line,
                 commit_sha=gh_pr.headRefOid,
@@ -265,9 +262,7 @@ class GitHub:
                         author=c.author.login if c.author else None,
                         created_at=datetime.fromisoformat(c.createdAt),
                     )
-                    for c in (
-                        t.comments.nodes if t.comments and t.comments.nodes else []
-                    )
+                    for c in (t.comments.nodes if t.comments.nodes else [])
                 ],
             )
             for t in threads.nodes
@@ -275,7 +270,7 @@ class GitHub:
 
     def _build_pr_comments(self, gh_pr: _GHFullPR) -> list[PRComment]:
         comments = gh_pr.comments
-        if comments is None or comments.nodes is None:
+        if comments.nodes is None:
             return []
         return [
             PRComment(

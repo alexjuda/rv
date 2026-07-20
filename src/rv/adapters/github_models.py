@@ -25,7 +25,7 @@ class _GHFindPRPullRequests(BaseModel):
 
 
 class _GHFindPRRepo(BaseModel):
-    pullRequests: _GHFindPRPullRequests | None = None
+    pullRequests: _GHFindPRPullRequests
 
 
 class _GHFindPRData(BaseModel):
@@ -50,11 +50,11 @@ class _GHPRNode(BaseModel):
 
 class _GHPRListPullRequests(BaseModel):
     nodes: list[_GHPRNode] | None = None
-    pageInfo: _GHPageInfo | None = None
+    pageInfo: _GHPageInfo
 
 
 class _GHPRListRepo(BaseModel):
-    pullRequests: _GHPRListPullRequests | None = None
+    pullRequests: _GHPRListPullRequests
 
 
 class _GHPRListData(BaseModel):
@@ -102,10 +102,10 @@ class _GHThreadCommentConnection(BaseModel):
 
 class _GHReviewThread(BaseModel):
     id: str
-    isResolved: bool | None = None
-    path: str | None = None
+    isResolved: bool
+    path: str
     line: int | None = None
-    comments: _GHThreadCommentConnection | None = None
+    comments: _GHThreadCommentConnection
 
 
 class _GHReviewThreadConnection(BaseModel):
@@ -120,9 +120,9 @@ class _GHFullPR(BaseModel):
     headRefName: str
     state: str
     headRefOid: str
-    comments: _GHCommentConnection | None = None
+    comments: _GHCommentConnection
     reviews: _GHReviewConnection | None = None
-    reviewThreads: _GHReviewThreadConnection | None = None
+    reviewThreads: _GHReviewThreadConnection
 
 
 class _GHFullPRRepo(BaseModel):

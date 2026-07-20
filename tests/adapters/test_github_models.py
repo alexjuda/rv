@@ -80,13 +80,6 @@ class TestGHFindPRData:
         parsed = _GHFindPRData.model_validate(data)
         assert parsed.repository is None
 
-    @staticmethod
-    def test_null_pull_requests():
-        data = {"repository": {"pullRequests": None}}
-        parsed = _GHFindPRData.model_validate(data)
-        assert parsed.repository is not None
-        assert parsed.repository.pullRequests is None
-
 
 class TestGHFullPRData:
     @staticmethod
@@ -167,7 +160,7 @@ class TestGHFullPRData:
         assert nodes[0].commit is None
 
     @staticmethod
-    def test_null_path_and_line():
+    def test_null_line():
         data = {
             "repository": {
                 "pullRequest": {
@@ -185,7 +178,7 @@ class TestGHFullPRData:
                             {
                                 "id": "t1",
                                 "isResolved": True,
-                                "path": None,
+                                "path": "file.py",
                                 "line": None,
                                 "comments": {"nodes": []},
                             }
@@ -204,7 +197,7 @@ class TestGHFullPRData:
         nodes = threads.nodes
         assert nodes is not None
         thread = nodes[0]
-        assert thread.path is None
+        assert thread.path == "file.py"
         assert thread.line is None
 
     @staticmethod
@@ -301,7 +294,7 @@ class TestGHFullPRData:
                     "headRefName": "feature",
                     "state": "OPEN",
                     "headRefOid": "abc123",
-                    "comments": None,
+                    "comments": {"nodes": None},
                     "reviews": {"nodes": None},
                     "reviewThreads": {"nodes": None},
                 }
@@ -312,10 +305,9 @@ class TestGHFullPRData:
         assert repo is not None
         pr = repo.pullRequest
         assert pr is not None
-        assert pr.comments is None
+        assert pr.comments.nodes is None
         assert pr.reviews is not None
         assert pr.reviews.nodes is None
-        assert pr.reviewThreads is not None
         assert pr.reviewThreads.nodes is None
 
     @staticmethod
@@ -368,15 +360,6 @@ class TestGHFullPR:
 
 
 class TestGHPRListData:
-    @staticmethod
-    def test_null_page_info():
-        data = {"repository": {"pullRequests": {"nodes": [], "pageInfo": None}}}
-        parsed = _GHPRListData.model_validate(data)
-        assert parsed.repository is not None
-        pull_requests = parsed.repository.pullRequests
-        assert pull_requests is not None
-        assert pull_requests.pageInfo is None
-
     @staticmethod
     def test_null_end_cursor():
         data = {
