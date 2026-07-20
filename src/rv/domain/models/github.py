@@ -15,6 +15,9 @@ class ThreadComment:
     created_at: datetime
 
 
+# TODO: review and collapse optionals. WTF.
+
+
 @dataclass
 class Thread:
     id: str  # opaque, provided by forge

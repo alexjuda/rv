@@ -17,7 +17,7 @@ class ThreadSummary:
 @dataclass
 class ListEntry:
     id: str
-    location: str
+    location: str | None
     author: str | None
     state: ListEntryState
     body_excerpt: str
