@@ -59,10 +59,14 @@ class TextListConvoUI:
             case None:
                 return ""
             case ThreadSummary():
+                text = ""
                 if (n := summary.n_replies) == 1:
-                    return f"+{n} reply"
+                    text += f"+{n} reply"
                 else:
-                    return f"+{n} replies"
+                    text += f"+{n} replies"
+                text += " from "
+                text += ", ".join(f"@{a}" for a in summary.reply_authors)
+                return text
             case ReviewSummary():
                 components = []
 

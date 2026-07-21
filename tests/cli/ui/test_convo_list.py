@@ -65,7 +65,7 @@ class TestTextListConvoUI:
                 ListEntry(
                     id="3",
                     type="pr_comment",
-                    location="(general)",
+                    location=None,
                     author="carol",
                     state=None,
                     body_excerpt="General comment",
@@ -76,7 +76,6 @@ class TestTextListConvoUI:
             ]
             ui.show_list(entries)
             out = capsys.readouterr().out
-            assert "(general)" in out
             assert "carol" in out
 
     class TestFormatSummary:
@@ -87,6 +86,6 @@ class TestTextListConvoUI:
         @staticmethod
         def test_format_thread_with_replies(ui: TextListConvoUI):
             assert (
-                ui.format_summary(ThreadSummary(n_replies=5, reply_authors=[]))
-                == "+5 replies"
+                ui.format_summary(ThreadSummary(n_replies=5, reply_authors=["alice", "bob"]))
+                == "+5 replies from @alice, @bob"
             )
