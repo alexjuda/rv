@@ -24,15 +24,15 @@ class TextListConvoUI:
                 entry.id,
                 entry.location,
                 Text(entry.author) if entry.author is not None else Text("[deleted]"),
-                self._format_state(entry.state),
+                self.format_state(entry.state),
                 entry.body_excerpt,
-                self._format_summary(entry.summary),
+                self.format_summary(entry.summary),
             )
 
         console.print(table)
 
     @staticmethod
-    def _format_state(state: ListEntryState) -> str:
+    def format_state(state: ListEntryState) -> str:
         # We only show thread states in the "state" column. PR-level stuff is in the "summary" column.
         match state:
             case None:
@@ -54,7 +54,7 @@ class TextListConvoUI:
                 return ""
 
     @staticmethod
-    def _format_summary(summary: ReviewSummary | ThreadSummary | None) -> str:
+    def format_summary(summary: ReviewSummary | ThreadSummary | None) -> str:
         match summary:
             case None:
                 return ""

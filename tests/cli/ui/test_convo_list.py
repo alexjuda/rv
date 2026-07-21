@@ -79,20 +79,14 @@ class TestTextListConvoUI:
             assert "(general)" in out
             assert "carol" in out
 
+    class TestFormatSummary:
         @staticmethod
-        def test_changes_requested_state(ui: TextListConvoUI):
-            assert ui._format_state("changes_requested") == "changes requested"
-
-        @staticmethod
-        def test_none_state(ui: TextListConvoUI):
-            assert ui._format_state(None) == ""
-
-        @staticmethod
-        def test_format_thread_none(ui: TextListConvoUI):
-            assert ui._format_thread(None) == ""
+        def test_none(ui: TextListConvoUI):
+            assert ui.format_summary(None) == ""
 
         @staticmethod
         def test_format_thread_with_replies(ui: TextListConvoUI):
             assert (
-                ui._format_thread(ThreadSummary(n_replies=5, reply_authors=[])) == "5"
+                ui.format_summary(ThreadSummary(n_replies=5, reply_authors=[]))
+                == "+5 replies"
             )
