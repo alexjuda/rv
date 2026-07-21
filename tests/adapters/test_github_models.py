@@ -180,7 +180,17 @@ class TestGHFullPRData:
                                 "isResolved": True,
                                 "path": "file.py",
                                 "line": None,
-                                "comments": {"nodes": []},
+                                "comments": {
+                                    "nodes": [
+                                        {
+                                            "id": "tc1",
+                                            "body": "nice",
+                                            "author": {"login": "user"},
+                                            "createdAt": "2024-01-01T00:00:00Z",
+                                            "pullRequestReview": {"id": "r1"},
+                                        }
+                                    ]
+                                },
                             }
                         ]
                     },
@@ -258,6 +268,7 @@ class TestGHFullPRData:
                                             "body": "comment",
                                             "author": None,
                                             "createdAt": "2024-01-01T00:00:00Z",
+                                            "pullRequestReview": {"id": "r1"},
                                         }
                                     ]
                                 },

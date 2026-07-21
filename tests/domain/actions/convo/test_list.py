@@ -58,6 +58,7 @@ def unresolved_thread():
         path="src/main.py",
         line=10,
         commit_sha="abc",
+        review_id=None,
         comments=[
             ThreadComment(
                 id="11",
@@ -77,6 +78,7 @@ def resolved_thread():
         path="src/lib.py",
         line=42,
         commit_sha="def",
+        review_id=None,
         comments=[
             ThreadComment(
                 id="21",
@@ -118,6 +120,7 @@ def deep_thread():
         path="src/rv/domain/ports.py",
         line=1,
         commit_sha="ghi",
+        review_id=None,
         comments=[
             ThreadComment(
                 id="51",

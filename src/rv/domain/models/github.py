@@ -25,6 +25,9 @@ class Thread:
     path: str
     line: int | None
     commit_sha: str
+    # ID of the review that created this thread, if any.
+    # NULL means the thread was not created as part of a review.
+    review_id: str | None
     comments: list[ThreadComment]
 
 

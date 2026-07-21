@@ -60,6 +60,7 @@ def sample_thread(sample_thread_comment: ThreadComment):
         path="src/hello.py",
         line=10,
         commit_sha="deadbeef",
+        review_id=None,
         comments=[sample_thread_comment],
     )
 

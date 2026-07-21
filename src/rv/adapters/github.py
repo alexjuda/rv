@@ -83,6 +83,7 @@ query($owner: String!, $repo: String!, $number: Int!) {
               body
               author { login }
               createdAt
+              pullRequestReview { id }
             }
           }
         }
@@ -255,6 +256,11 @@ class GitHub:
                 path=t.path,
                 line=t.line,
                 commit_sha=gh_pr.headRefOid,
+                review_id=(
+                    t.comments.nodes[0].pullRequestReview.id
+                    if t.comments.nodes and t.comments.nodes[0].pullRequestReview
+                    else None
+                ),
                 comments=[
                     ThreadComment(
                         id=c.id,

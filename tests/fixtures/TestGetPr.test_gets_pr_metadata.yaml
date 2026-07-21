@@ -8,7 +8,7 @@ interactions:
       { oid }\n        }\n      }\n      reviewThreads(first: 100) {\n        nodes
       {\n          id\n          isResolved\n          path\n          line\n          comments(first:
       100) {\n            nodes {\n              id\n              body\n              author
-      { login }\n              createdAt\n            }\n          }\n        }\n      }\n    }\n  }\n}\n","variables":{"owner":"alexjuda","repo":"rv-testing","number":6}}'
+      { login }\n              createdAt\n              pullRequestReview { id }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n","variables":{"owner":"alexjuda","repo":"rv-testing","number":6}}'
     headers:
       Authorization:
       - Bearer <TOKEN>
@@ -19,7 +19,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '999'
+      - '1039'
       content-type:
       - application/json
       host:
@@ -35,14 +35,14 @@ interactions:
         some review feedback. Overall the changes look good!\",\"createdAt\":\"2026-06-30T08:38:44Z\"},{\"id\":\"IC_kwDOSlvxhM8AAAABIJMTdg\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"I
         noticed tests still need to be added \u2014 are those coming in a follow-up?\",\"createdAt\":\"2026-06-30T08:38:44Z\"}]},\"reviews\":{\"nodes\":[{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsJzw\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"\",\"createdAt\":\"2026-06-30T08:38:35Z\",\"state\":\"COMMENTED\",\"commit\":{\"oid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\"}},{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsKRg\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"\",\"createdAt\":\"2026-06-30T08:38:36Z\",\"state\":\"COMMENTED\",\"commit\":{\"oid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\"}},{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsKrw\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"\",\"createdAt\":\"2026-06-30T08:38:37Z\",\"state\":\"COMMENTED\",\"commit\":{\"oid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\"}},{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsLBg\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"\",\"createdAt\":\"2026-06-30T08:38:38Z\",\"state\":\"COMMENTED\",\"commit\":{\"oid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\"}},{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsL_g\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"\",\"createdAt\":\"2026-06-30T08:38:40Z\",\"state\":\"COMMENTED\",\"commit\":{\"oid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\"}},{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsMUw\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"\",\"createdAt\":\"2026-06-30T08:38:41Z\",\"state\":\"COMMENTED\",\"commit\":{\"oid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\"}},{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsM6A\",\"author\":{\"login\":\"alexjuda\"},\"body\":\"\",\"createdAt\":\"2026-06-30T08:38:42Z\",\"state\":\"COMMENTED\",\"commit\":{\"oid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\"}},{\"id\":\"PRR_kwDOSlvxhM8AAAABEhuQ7g\",\"author\":{\"login\":\"alexjuda2\"},\"body\":\"\",\"createdAt\":\"2026-06-30T08:44:00Z\",\"state\":\"APPROVED\",\"commit\":{\"oid\":\"abf05fedabf028f47f23d58b3415b7040c1e184b\"}}]},\"reviewThreads\":{\"nodes\":[{\"id\":\"PRRT_kwDOSlvxhM6NNhMO\",\"isResolved\":false,\"path\":\"calculator.py\",\"line\":19,\"comments\":{\"nodes\":[{\"id\":\"PRRC_kwDOSlvxhM7QdT6Y\",\"body\":\"Consider
         using `math.factorial` from the standard library. It's more readable and uses
-        optimized C code.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:35Z\"}]}},{\"id\":\"PRRT_kwDOSlvxhM6NNhNp\",\"isResolved\":false,\"path\":\"calculator.py\",\"line\":29,\"comments\":{\"nodes\":[{\"id\":\"PRRC_kwDOSlvxhM7QdT8S\",\"body\":\"The
+        optimized C code.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:35Z\",\"pullRequestReview\":{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsJzw\"}}]}},{\"id\":\"PRRT_kwDOSlvxhM6NNhNp\",\"isResolved\":false,\"path\":\"calculator.py\",\"line\":29,\"comments\":{\"nodes\":[{\"id\":\"PRRC_kwDOSlvxhM7QdT8S\",\"body\":\"The
         `if/elif/else` chain for the base cases could be simplified to `if n <= 1:
-        return n`.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:36Z\"}]}},{\"id\":\"PRRT_kwDOSlvxhM6NNhOo\",\"isResolved\":true,\"path\":\"calculator.py\",\"line\":33,\"comments\":{\"nodes\":[{\"id\":\"PRRC_kwDOSlvxhM7QdT9m\",\"body\":\"This
-        tuple unpacking is correct, but consider a `temp` variable for clarity.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:37Z\"},{\"id\":\"PRRC_kwDOSlvxhM7QdT-w\",\"body\":\"Good
-        point, simplified.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:38Z\"}]}},{\"id\":\"PRRT_kwDOSlvxhM6NNhRY\",\"isResolved\":false,\"path\":\"calculator.py\",\"line\":23,\"comments\":{\"nodes\":[{\"id\":\"PRRC_kwDOSlvxhM7QdUBl\",\"body\":\"Should
-        add docstrings to the public functions for better tooling support.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:40Z\"},{\"id\":\"PRRC_kwDOSlvxhM7QdUC1\",\"body\":\"Good
-        idea, I'll add them.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:41Z\"},{\"id\":\"PRRC_kwDOSlvxhM7QdUEf\",\"body\":\"Added
-        docstrings in the latest iteration.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:43Z\"}]}}]}}}}}"
+        return n`.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:36Z\",\"pullRequestReview\":{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsKRg\"}}]}},{\"id\":\"PRRT_kwDOSlvxhM6NNhOo\",\"isResolved\":true,\"path\":\"calculator.py\",\"line\":33,\"comments\":{\"nodes\":[{\"id\":\"PRRC_kwDOSlvxhM7QdT9m\",\"body\":\"This
+        tuple unpacking is correct, but consider a `temp` variable for clarity.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:37Z\",\"pullRequestReview\":{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsKrw\"}},{\"id\":\"PRRC_kwDOSlvxhM7QdT-w\",\"body\":\"Good
+        point, simplified.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:38Z\",\"pullRequestReview\":{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsLBg\"}}]}},{\"id\":\"PRRT_kwDOSlvxhM6NNhRY\",\"isResolved\":false,\"path\":\"calculator.py\",\"line\":23,\"comments\":{\"nodes\":[{\"id\":\"PRRC_kwDOSlvxhM7QdUBl\",\"body\":\"Should
+        add docstrings to the public functions for better tooling support.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:40Z\",\"pullRequestReview\":{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsL_g\"}},{\"id\":\"PRRC_kwDOSlvxhM7QdUC1\",\"body\":\"Good
+        idea, I'll add them.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:41Z\",\"pullRequestReview\":{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsMUw\"}},{\"id\":\"PRRC_kwDOSlvxhM7QdUEf\",\"body\":\"Added
+        docstrings in the latest iteration.\",\"author\":{\"login\":\"alexjuda\"},\"createdAt\":\"2026-06-30T08:38:43Z\",\"pullRequestReview\":{\"id\":\"PRR_kwDOSlvxhM8AAAABEhsM6A\"}}]}}]}}}}}"
     headers:
       access-control-allow-origin:
       - '*'
@@ -56,12 +56,14 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Tue, 30 Jun 2026 09:49:58 GMT
+      - Tue, 21 Jul 2026 09:32:32 GMT
       github-authentication-token-expiration: 2021-01-01 09:01:01 UTC
       referrer-policy:
       - origin-when-cross-origin, strict-origin-when-cross-origin
       server:
       - github.com
+      strict-transport-security:
+      - max-age=31536000; includeSubdomains; preload
       transfer-encoding:
       - chunked
       vary:
@@ -73,17 +75,17 @@ interactions:
       x-github-media-type:
       - github.v4; format=json
       x-github-request-id:
-      - A51C:2DF12E:1B4E651:19E5513:6A439145
+      - A52C:3D1080:79617FA:72D1F3A:6A5F3CAF
       x-ratelimit-limit:
       - '5000'
       x-ratelimit-remaining:
-      - '4984'
+      - '4992'
       x-ratelimit-reset:
-      - '1782814665'
+      - '1784629653'
       x-ratelimit-resource:
       - graphql
       x-ratelimit-used:
-      - '16'
+      - '8'
       x-xss-protection:
       - '0'
     status:

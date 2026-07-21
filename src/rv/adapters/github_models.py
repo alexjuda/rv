@@ -89,11 +89,16 @@ class GHReviewConnection(BaseModel):
     nodes: list[GHReview] | None = None
 
 
+class GHReviewRef(BaseModel):
+    id: str
+
+
 class GHThreadComment(BaseModel):
     id: str
     body: str
     author: GHActor | None = None
     createdAt: str
+    pullRequestReview: GHReviewRef | None = None
 
 
 class GHThreadCommentConnection(BaseModel):
