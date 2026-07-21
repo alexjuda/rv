@@ -203,6 +203,7 @@ class ListConvo:
                 summary=ReviewSummary(
                     n_posted_threads=len(review.threads),
                     state=review.review.state,
+                    comment_empty=review.review.body == "",
                 ),
                 created_at=review.review.created_at,
             )

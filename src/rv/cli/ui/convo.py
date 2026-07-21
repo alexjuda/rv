@@ -4,7 +4,7 @@ from rich.console import Console
 from rich.table import Table
 from rich.text import Text
 
-from ...domain.models.convo import ListEntry, ListEntryState, ThreadSummary
+from ...domain.models.convo import ListEntry, ListEntryState, ThreadSummary, ReviewSummary
 
 
 class TextListConvoUI:
@@ -17,7 +17,7 @@ class TextListConvoUI:
         table.add_column("Author")
         table.add_column("State")
         table.add_column("Body")
-        table.add_column("Replies")
+        table.add_column("Summary")
 
         for entry in entries:
             table.add_row(
@@ -25,30 +25,61 @@ class TextListConvoUI:
                 entry.location,
                 Text(entry.author) if entry.author is not None else Text("[deleted]"),
                 self._format_state(entry.state),
-                entry.body_excerpt[:60],
-                self._format_thread(entry.thread_summary),
+                entry.body_excerpt,
+                self._format_summary(entry.summary),
             )
 
         console.print(table)
 
     @staticmethod
     def _format_state(state: ListEntryState) -> str:
+        # We only show thread states in the "state" column. PR-level stuff is in the "summary" column.
         match state:
             case None:
                 return ""
             case "unresolved":
+                # Thread
                 return "unresolved"
             case "resolved":
+                # Thread
                 return "resolved"
             case "approved":
-                return "approved"
+                # PR
+                return ""
             case "changes_requested":
-                return "changes requested"
+                # PR
+                return ""
             case "commented":
-                return "commented"
+                # PR
+                return ""
 
     @staticmethod
-    def _format_thread(thread_summary: ThreadSummary | None) -> str:
-        if thread_summary is None:
-            return ""
-        return f"{thread_summary.n_replies}"
+    def _format_summary(summary: ReviewSummary | ThreadSummary | None) -> str:
+        match summary:
+            case None:
+                return ""
+            case ThreadSummary():
+                if (n := summary.n_replies) == 1:
+                    return f"+{n} reply"
+                else:
+                    return f"+{n} replies"
+            case ReviewSummary():
+                components = []
+
+                match summary.state:
+                    case "approved":
+                        components.append("[A]")
+                    case "changes_requested":
+                        components.append("[CR]")
+                    case "commented":
+                        if summary.comment_empty:
+                            components.append("reviewed")
+                        if not summary.comment_empty:
+                            components.append("[C]")
+
+                if (n := summary.n_posted_threads) > 0:
+                    if n == 1:
+                        components.append(f"+{n} thread")
+                    else:
+                        components.append(f"+{n} threads")
+                return ", ".join(components)

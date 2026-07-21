@@ -21,6 +21,7 @@ class ThreadSummary:
 class ReviewSummary:
     n_posted_threads: int
     state: ReviewState
+    comment_empty: bool
 
 
 @dataclass
