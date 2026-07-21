@@ -20,12 +20,12 @@ from ..domain.models.github import (
 )
 from ..domain.ports import Auth
 from .github_models import (
-    _GHFindPRData,
-    _GHFullPR,
-    _GHFullPRData,
-    _GHGraphQLEnvelope,
-    _GHPRListData,
-    _GHPRNode,
+    GHFindPRData,
+    GHFullPR,
+    GHFullPRData,
+    GHGraphQLEnvelope,
+    GHPRListData,
+    GHPRNode,
 )
 
 GRAPHQL_API = "https://api.github.com/graphql"
@@ -144,7 +144,7 @@ class GitHub:
         )
         resp.raise_for_status()
         raw = resp.json()
-        envelope = _GHGraphQLEnvelope.model_validate(raw)
+        envelope = GHGraphQLEnvelope.model_validate(raw)
         if envelope.data is None:
             if envelope.errors:
                 msgs = "; ".join(e.message for e in envelope.errors)
@@ -168,7 +168,7 @@ class GitHub:
             FIND_PR_QUERY,
             {"owner": repo.owner, "repo": repo.repo, "branch": branch},
         )
-        parsed = _GHFindPRData.model_validate(data)
+        parsed = GHFindPRData.model_validate(data)
         if parsed.repository is None:
             return None
         prs = parsed.repository.pullRequests
@@ -191,7 +191,7 @@ class GitHub:
                     "states": states,
                 },
             )
-            parsed = _GHPRListData.model_validate(data)
+            parsed = GHPRListData.model_validate(data)
             if parsed.repository is None:
                 break
             pull_requests = parsed.repository.pullRequests
@@ -205,7 +205,7 @@ class GitHub:
 
         return prs
 
-    def _to_domain_pr(self, repo: RepoLocator, node: _GHPRNode) -> PR:
+    def _to_domain_pr(self, repo: RepoLocator, node: GHPRNode) -> PR:
         return PR(
             locator=PRLocator(repo=repo, number=node.number),
             url=node.url,
@@ -222,7 +222,7 @@ class GitHub:
             GET_PR_QUERY,
             {"owner": pr.repo.owner, "repo": pr.repo.repo, "number": pr.number},
         )
-        parsed = _GHFullPRData.model_validate(data)
+        parsed = GHFullPRData.model_validate(data)
         if parsed.repository is None or parsed.repository.pullRequest is None:
             return None
         gh_pr = parsed.repository.pullRequest
@@ -244,7 +244,7 @@ class GitHub:
             ),
         )
 
-    def _build_threads(self, gh_pr: _GHFullPR) -> list[Thread]:
+    def _build_threads(self, gh_pr: GHFullPR) -> list[Thread]:
         threads = gh_pr.reviewThreads
         if threads.nodes is None:
             return []
@@ -268,7 +268,7 @@ class GitHub:
             for t in threads.nodes
         ]
 
-    def _build_pr_comments(self, gh_pr: _GHFullPR) -> list[PRComment]:
+    def _build_pr_comments(self, gh_pr: GHFullPR) -> list[PRComment]:
         comments = gh_pr.comments
         if comments.nodes is None:
             return []
@@ -282,7 +282,7 @@ class GitHub:
             for c in comments.nodes
         ]
 
-    def _build_reviews(self, gh_pr: _GHFullPR) -> list[Review]:
+    def _build_reviews(self, gh_pr: GHFullPR) -> list[Review]:
         reviews = gh_pr.reviews
         if reviews is None or reviews.nodes is None:
             return []

@@ -2,15 +2,15 @@ import pytest
 from pydantic import ValidationError
 
 from rv.adapters.github_models import (
-    _GHActor,
-    _GHCommentConnection,
-    _GHFindPRData,
-    _GHFullPR,
-    _GHFullPRData,
-    _GHGraphQLEnvelope,
-    _GHPRListData,
-    _GHReviewConnection,
-    _GHReviewThreadConnection,
+    GHActor,
+    GHCommentConnection,
+    GHFindPRData,
+    GHFullPR,
+    GHFullPRData,
+    GHGraphQLEnvelope,
+    GHPRListData,
+    GHReviewConnection,
+    GHReviewThreadConnection,
 )
 
 
@@ -18,14 +18,14 @@ class TestGHGraphQLEnvelope:
     @staticmethod
     def test_valid_response():
         raw = {"data": {"key": "value"}}
-        envelope = _GHGraphQLEnvelope.model_validate(raw)
+        envelope = GHGraphQLEnvelope.model_validate(raw)
         assert envelope.data == {"key": "value"}
         assert envelope.errors is None
 
     @staticmethod
     def test_errors_without_data():
         raw = {"data": None, "errors": [{"message": "Not found", "type": "NOT_FOUND"}]}
-        envelope = _GHGraphQLEnvelope.model_validate(raw)
+        envelope = GHGraphQLEnvelope.model_validate(raw)
         assert envelope.data is None
         assert envelope.errors is not None
         assert len(envelope.errors) == 1
@@ -34,7 +34,7 @@ class TestGHGraphQLEnvelope:
     @staticmethod
     def test_errors_with_data():
         raw = {"data": {"key": "value"}, "errors": [{"message": "warning"}]}
-        envelope = _GHGraphQLEnvelope.model_validate(raw)
+        envelope = GHGraphQLEnvelope.model_validate(raw)
         assert envelope.data == {"key": "value"}
         assert envelope.errors is not None
         assert len(envelope.errors) == 1
@@ -42,7 +42,7 @@ class TestGHGraphQLEnvelope:
     @staticmethod
     def test_empty_envelope():
         raw = {}
-        envelope = _GHGraphQLEnvelope.model_validate(raw)
+        envelope = GHGraphQLEnvelope.model_validate(raw)
         assert envelope.data is None
         assert envelope.errors is None
 
@@ -51,7 +51,7 @@ class TestGHFindPRData:
     @staticmethod
     def test_with_pr():
         data = {"repository": {"pullRequests": {"nodes": [{"number": 42}]}}}
-        parsed = _GHFindPRData.model_validate(data)
+        parsed = GHFindPRData.model_validate(data)
         assert parsed.repository is not None
         assert parsed.repository.pullRequests is not None
         nodes = parsed.repository.pullRequests.nodes
@@ -61,7 +61,7 @@ class TestGHFindPRData:
     @staticmethod
     def test_empty_nodes():
         data = {"repository": {"pullRequests": {"nodes": []}}}
-        parsed = _GHFindPRData.model_validate(data)
+        parsed = GHFindPRData.model_validate(data)
         assert parsed.repository is not None
         assert parsed.repository.pullRequests is not None
         assert parsed.repository.pullRequests.nodes == []
@@ -69,7 +69,7 @@ class TestGHFindPRData:
     @staticmethod
     def test_null_nodes():
         data = {"repository": {"pullRequests": {"nodes": None}}}
-        parsed = _GHFindPRData.model_validate(data)
+        parsed = GHFindPRData.model_validate(data)
         assert parsed.repository is not None
         assert parsed.repository.pullRequests is not None
         assert parsed.repository.pullRequests.nodes is None
@@ -77,7 +77,7 @@ class TestGHFindPRData:
     @staticmethod
     def test_null_repository():
         data = {"repository": None}
-        parsed = _GHFindPRData.model_validate(data)
+        parsed = GHFindPRData.model_validate(data)
         assert parsed.repository is None
 
 
@@ -85,14 +85,14 @@ class TestGHFullPRData:
     @staticmethod
     def test_null_pull_request():
         data = {"repository": {"pullRequest": None}}
-        parsed = _GHFullPRData.model_validate(data)
+        parsed = GHFullPRData.model_validate(data)
         assert parsed.repository is not None
         assert parsed.repository.pullRequest is None
 
     @staticmethod
     def test_null_repository():
         data = {"repository": None}
-        parsed = _GHFullPRData.model_validate(data)
+        parsed = GHFullPRData.model_validate(data)
         assert parsed.repository is None
 
     @staticmethod
@@ -113,7 +113,7 @@ class TestGHFullPRData:
                 }
             }
         }
-        parsed = _GHFullPRData.model_validate(data)
+        parsed = GHFullPRData.model_validate(data)
         pull_request = parsed.repository
         assert pull_request is not None
         assert pull_request.pullRequest is not None
@@ -148,7 +148,7 @@ class TestGHFullPRData:
                 }
             }
         }
-        parsed = _GHFullPRData.model_validate(data)
+        parsed = GHFullPRData.model_validate(data)
         repo = parsed.repository
         assert repo is not None
         pr = repo.pullRequest
@@ -187,7 +187,7 @@ class TestGHFullPRData:
                 }
             }
         }
-        parsed = _GHFullPRData.model_validate(data)
+        parsed = GHFullPRData.model_validate(data)
         repo = parsed.repository
         assert repo is not None
         pr = repo.pullRequest
@@ -228,7 +228,7 @@ class TestGHFullPRData:
             }
         }
         with pytest.raises(ValidationError):
-            _GHFullPRData.model_validate(data)
+            GHFullPRData.model_validate(data)
 
     @staticmethod
     def test_null_author_on_thread_comment():
@@ -267,7 +267,7 @@ class TestGHFullPRData:
                 }
             }
         }
-        parsed = _GHFullPRData.model_validate(data)
+        parsed = GHFullPRData.model_validate(data)
         repo = parsed.repository
         assert repo is not None
         pr = repo.pullRequest
@@ -300,7 +300,7 @@ class TestGHFullPRData:
                 }
             }
         }
-        parsed = _GHFullPRData.model_validate(data)
+        parsed = GHFullPRData.model_validate(data)
         repo = parsed.repository
         assert repo is not None
         pr = repo.pullRequest
@@ -338,23 +338,23 @@ class TestGHFullPRData:
             }
         }
         with pytest.raises(ValidationError):
-            _GHFullPRData.model_validate(data)
+            GHFullPRData.model_validate(data)
 
 
 class TestGHFullPR:
     @staticmethod
     def test_empty_string_body_accepted():
-        model = _GHFullPR(
+        model = GHFullPR(
             url="https://github.com/o/r/pull/1",
             title="Test",
-            author=_GHActor(login="user"),
+            author=GHActor(login="user"),
             baseRefName="main",
             headRefName="feature",
             state="OPEN",
             headRefOid="abc123",
-            comments=_GHCommentConnection(nodes=[]),
-            reviews=_GHReviewConnection(nodes=[]),
-            reviewThreads=_GHReviewThreadConnection(nodes=[]),
+            comments=GHCommentConnection(nodes=[]),
+            reviews=GHReviewConnection(nodes=[]),
+            reviewThreads=GHReviewThreadConnection(nodes=[]),
         )
         assert model.state == "OPEN"
 
@@ -370,7 +370,7 @@ class TestGHPRListData:
                 }
             }
         }
-        parsed = _GHPRListData.model_validate(data)
+        parsed = GHPRListData.model_validate(data)
         assert parsed.repository is not None
         pull_requests = parsed.repository.pullRequests
         assert pull_requests is not None
@@ -399,7 +399,7 @@ class TestGHPRListData:
                 }
             }
         }
-        parsed = _GHPRListData.model_validate(data)
+        parsed = GHPRListData.model_validate(data)
         assert parsed.repository is not None
         pull_requests = parsed.repository.pullRequests
         assert pull_requests is not None
