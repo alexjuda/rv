@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Protocol
 
 from ...exceptions import PRNotCachedError
-from ...models.convo import ListEntry, ThreadSummary
+from ...models.convo import ListEntry, ThreadSummary, ReviewSummary
 from ...models.github import PRComment, PRLocator, Review, Thread
 from ...ports import VCS, Forge, Store
 from .._resolve import resolve_pr_loc
@@ -19,6 +19,12 @@ class ListConvoOpts:
     pr_comments: bool | None = None
     reviews: bool | None = None
     file: Path | None = None
+
+
+@dataclass
+class ReviewWithThreads:
+    review: Review
+    threads: list[Thread]
 
 
 class ListConvoUI(Protocol):
@@ -55,10 +61,12 @@ class ListConvo:
         filters = self._active_filters(opts)
         convo = full_pr.convo
 
+        reviews_with_threads = self._combine_reviews_with_threads(convo.reviews, convo.threads)
+
         entries: list[ListEntry] = [
             *self._populate_threads(convo.threads, filters=filters),
             *self._populate_pr_comments(convo.pr_comments, filters=filters),
-            *self._populate_reviews(convo.reviews, filters=filters),
+            *self._populate_reviews(reviews_with_threads, filters=filters),
         ]
 
         entries.sort(key=lambda e: e.created_at)
@@ -140,11 +148,13 @@ class ListConvo:
             )
             yield ListEntry(
                 id=thread.id,
+                type="thread",
                 location=f"{thread.path}:{thread.line}",
                 author=tc.author,
                 state="unresolved" if not thread.is_resolved else "resolved",
                 body_excerpt=tc.body,
                 thread_summary=thread_summary,
+                summary=thread_summary,
                 created_at=tc.created_at,
             )
 
@@ -161,17 +171,19 @@ class ListConvo:
         for comment in comments:
             yield ListEntry(
                 id=comment.id,
+                type="pr_comment",
                 location=None,
                 author=comment.author,
                 state=None,
                 body_excerpt=comment.body,
                 thread_summary=None,
+                summary=None,
                 created_at=comment.created_at,
             )
 
     @staticmethod
     def _populate_reviews(
-        reviews: list[Review], filters: _ActiveFilters
+        reviews: list[ReviewWithThreads], filters: _ActiveFilters
     ) -> Iterable[ListEntry]:
         """
         Table rows coming from PR reviews.
@@ -181,11 +193,39 @@ class ListConvo:
 
         for review in reviews:
             yield ListEntry(
-                id=review.id,
+                id=review.review.id,
+                type="review",
                 location=None,
-                author=review.author,
-                state=review.state,
-                body_excerpt=review.body,
+                author=review.review.author,
+                state=review.review.state,
+                body_excerpt=review.review.body,
                 thread_summary=None,
-                created_at=review.created_at,
+                summary=ReviewSummary(
+                    n_posted_threads=len(review.threads),
+                    state=review.review.state,
+                ),
+                created_at=review.review.created_at,
             )
+
+    @staticmethod
+    def _combine_reviews_with_threads(
+        reviews: list[Review], threads: list[Thread]
+    ) -> list[ReviewWithThreads]:
+        # Theoretically we could get this association at the DB level, in the adapter. However that would lead
+        # to a proliferation of data types across the application. Resolving the review<->threads mapping
+        # in-memory here is a much simpler solution. We don't have to care about performance, it's all gonna be
+        # small amounts of data anyway.
+        threads_by_review_id: dict[str, list[Thread]] = {}
+        for thread in threads:
+            if thread.review_id is None:
+                # Skip inline comment threads detached from PR reviews.
+                continue
+            threads_by_review_id.setdefault(thread.review_id, []).append(thread)
+
+        return [
+            ReviewWithThreads(
+                review=review,
+                threads=threads_by_review_id.get(review.id, []),
+            )
+            for review in reviews
+        ]

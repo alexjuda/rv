@@ -6,7 +6,7 @@ from pytest import fixture, raises
 
 from rv.domain.actions.convo.list import ListConvo, ListConvoOpts, ListConvoUI
 from rv.domain.exceptions import PRNotCachedError
-from rv.domain.models.convo import ListEntry
+from rv.domain.models.convo import ListEntry, ReviewSummary
 from rv.domain.models.github import (
     PR,
     FullPR,
@@ -58,7 +58,7 @@ def unresolved_thread():
         path="src/main.py",
         line=10,
         commit_sha="abc",
-        review_id=None,
+        review_id="4",
         comments=[
             ThreadComment(
                 id="11",
@@ -78,7 +78,7 @@ def resolved_thread():
         path="src/lib.py",
         line=42,
         commit_sha="def",
-        review_id=None,
+        review_id="4",
         comments=[
             ThreadComment(
                 id="21",
@@ -106,6 +106,18 @@ def sample_review():
         id="4",
         author="dave",
         body="Looks good",
+        created_at=datetime.fromisoformat("2024-01-04T10:00:00+00:00"),
+        state="approved",
+        commit="abc123",
+    )
+
+
+@fixture
+def empty_review():
+    return Review(
+        id="4",
+        author="dave",
+        body="",
         created_at=datetime.fromisoformat("2024-01-04T10:00:00+00:00"),
         state="approved",
         commit="abc123",
@@ -167,6 +179,25 @@ def full_pr_with_mixed_convo(
         ),
     )
 
+
+@fixture
+def full_pr_with_empty_body_review(
+    sample_pr: PR,
+    unresolved_thread: Thread,
+    resolved_thread: Thread,
+    empty_review: Review,
+):
+    """
+    Use case: the reviewer posts inline comment threads but doesn't write any PR-level comment. This happens often, and we should present it decently.
+    """
+    return FullPR(
+        pr=sample_pr,
+        convo=PRConversation(
+            threads=[unresolved_thread, resolved_thread],
+            pr_comments=[],
+            reviews=[empty_review],
+        ),
+    )
 
 class TestListConvo:
     class TestErrors:
@@ -305,6 +336,37 @@ class TestListConvo:
             entries: list[ListEntry] = ui.show_list.call_args.args[0]
             assert len(entries) == 0
 
+    class TestPRCommentFilter:
+        @staticmethod
+        async def test_empty_review_with_threads(
+            store,
+            action: ListConvo,
+            full_pr_with_empty_body_review: FullPR,
+            ui,
+        ):
+            full_pr = full_pr_with_empty_body_review
+            store.get_pr.return_value = full_pr
+            opts = ListConvoOpts(
+                pr=full_pr.pr.locator,
+                reviews=True,
+                pr_comments=False,
+                resolved=False,
+                unresolved=False,
+            )
+
+            await action.exec(opts=opts)
+
+            ui.show_list.assert_called_once()
+            entries: list[ListEntry] = ui.show_list.call_args.args[0]
+            assert len(entries) == 1
+
+            entry = entries[0]
+            assert entry.type == "review"
+            assert isinstance(entry.summary, ReviewSummary)
+            assert entry.summary.n_posted_threads == 2
+            assert entry.summary.state == "approved"
+
+
     class TestAllFilter:
         @staticmethod
         async def test_shows_all_types(
@@ -323,3 +385,4 @@ class TestListConvo:
             assert len(entries) == 4
             ids = {e.id for e in entries}
             assert ids == {"1", "2", "3", "4"}
+
