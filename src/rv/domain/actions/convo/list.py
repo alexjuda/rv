@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Protocol
 
 from ...exceptions import PRNotCachedError
-from ...models.convo import ListEntry, ReviewSummary, ThreadSummary
+from ...models.convo import ListEntry, PRCommentSummary, ReviewSummary, ThreadSummary
 from ...models.github import PRComment, PRLocator, Review, Thread
 from ...ports import VCS, Forge, Store
 from .._resolve import resolve_pr_loc
@@ -125,7 +125,9 @@ class ListConvo:
         for c in replies:
             if c.author is not None and c.author not in seen:
                 seen.append(c.author)
-        return ThreadSummary(n_replies=len(replies), reply_authors=seen)
+        return ThreadSummary(
+            n_replies=len(replies), reply_authors=seen, is_resolved=thread.is_resolved
+        )
 
     @classmethod
     def _populate_threads(
@@ -145,9 +147,7 @@ class ListConvo:
                 if not filters.unresolved:
                     continue
             tc = thread.comments[0]
-            thread_summary = (
-                cls._build_thread_summary(thread) if len(thread.comments) > 1 else None
-            )
+            thread_summary = cls._build_thread_summary(thread)
             yield ListEntry(
                 id=thread.id,
                 type="thread",
@@ -179,7 +179,7 @@ class ListConvo:
                 state=None,
                 body_excerpt=comment.body,
                 thread_summary=None,
-                summary=None,
+                summary=PRCommentSummary(),
                 created_at=comment.created_at,
             )
 

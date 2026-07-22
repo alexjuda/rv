@@ -16,6 +16,7 @@ type ListEntryType = Literal["thread", "pr_comment", "review"]
 class ThreadSummary:
     n_replies: int
     reply_authors: list[str]
+    is_resolved: bool
 
 
 @dataclass
@@ -23,6 +24,12 @@ class ReviewSummary:
     n_posted_threads: int
     state: ReviewState
     comment_empty: bool
+
+
+@dataclass
+class PRCommentSummary:
+    # Empty because we don't need to convey any additional information over that someone posed a PR comment.
+    pass
 
 
 @dataclass
@@ -35,5 +42,5 @@ class ListEntry:
     body_excerpt: str
     # TODO: delete this
     thread_summary: ThreadSummary | None
-    summary: ThreadSummary | ReviewSummary | None
+    summary: ThreadSummary | ReviewSummary | PRCommentSummary
     created_at: datetime
