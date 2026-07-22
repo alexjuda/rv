@@ -24,9 +24,7 @@ class TestTextListConvoUI:
                     type="thread",
                     location="src/main.py:10",
                     author="alice",
-                    state="unresolved",
                     body_excerpt="Fix this bug",
-                    thread_summary=None,
                     summary=ThreadSummary(
                         n_replies=0, reply_authors=[], is_resolved=False
                     ),
@@ -48,11 +46,7 @@ class TestTextListConvoUI:
                     type="thread",
                     location="src/lib.py:42",
                     author="bob",
-                    state="resolved",
                     body_excerpt="Done",
-                    thread_summary=ThreadSummary(
-                        n_replies=3, reply_authors=["carol"], is_resolved=True
-                    ),
                     summary=ThreadSummary(
                         n_replies=3, reply_authors=["carol"], is_resolved=True
                     ),
@@ -72,9 +66,7 @@ class TestTextListConvoUI:
                     type="pr_comment",
                     location=None,
                     author="carol",
-                    state=None,
                     body_excerpt="General comment",
-                    thread_summary=None,
                     summary=PRCommentSummary(),
                     created_at=SAMPLE_TS,
                 ),

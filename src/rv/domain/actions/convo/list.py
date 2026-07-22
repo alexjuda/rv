@@ -153,9 +153,7 @@ class ListConvo:
                 type="thread",
                 location=f"{thread.path}:{thread.line}",
                 author=tc.author,
-                state="unresolved" if not thread.is_resolved else "resolved",
                 body_excerpt=tc.body,
-                thread_summary=thread_summary,
                 summary=thread_summary,
                 created_at=tc.created_at,
             )
@@ -176,9 +174,7 @@ class ListConvo:
                 type="pr_comment",
                 location=None,
                 author=comment.author,
-                state=None,
                 body_excerpt=comment.body,
-                thread_summary=None,
                 summary=PRCommentSummary(),
                 created_at=comment.created_at,
             )
@@ -199,9 +195,7 @@ class ListConvo:
                 type="review",
                 location=None,
                 author=review.review.author,
-                state=review.review.state,
                 body_excerpt=review.review.body,
-                thread_summary=None,
                 summary=ReviewSummary(
                     n_posted_threads=len(review.threads),
                     state=review.review.state,

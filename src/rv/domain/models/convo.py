@@ -38,9 +38,6 @@ class ListEntry:
     type: ListEntryType
     location: str | None
     author: str | None
-    state: ListEntryState
     body_excerpt: str
-    # TODO: delete this
-    thread_summary: ThreadSummary | None
     summary: ThreadSummary | ReviewSummary | PRCommentSummary
     created_at: datetime

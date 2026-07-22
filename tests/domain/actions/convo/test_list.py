@@ -6,7 +6,7 @@ from pytest import fixture, raises
 
 from rv.domain.actions.convo.list import ListConvo, ListConvoOpts, ListConvoUI
 from rv.domain.exceptions import PRNotCachedError
-from rv.domain.models.convo import ListEntry, ReviewSummary
+from rv.domain.models.convo import ListEntry, ReviewSummary, ThreadSummary
 from rv.domain.models.github import (
     PR,
     FullPR,
@@ -232,7 +232,8 @@ class TestListConvo:
             entries: list[ListEntry] = ui.show_list.call_args.args[0]
             assert len(entries) == 1
             assert entries[0].id == "1"
-            assert entries[0].state == "unresolved"
+            assert isinstance(entries[0].summary, ThreadSummary)
+            assert entries[0].summary.is_resolved is False
 
     class TestFileFilter:
         @staticmethod
