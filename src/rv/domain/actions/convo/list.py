@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Protocol
 
 from ...exceptions import PRNotCachedError
-from ...models.convo import ListEntry, ThreadSummary, ReviewSummary
+from ...models.convo import ListEntry, ReviewSummary, ThreadSummary
 from ...models.github import PRComment, PRLocator, Review, Thread
 from ...ports import VCS, Forge, Store
 from .._resolve import resolve_pr_loc
@@ -61,7 +61,9 @@ class ListConvo:
         filters = self._active_filters(opts)
         convo = full_pr.convo
 
-        reviews_with_threads = self._combine_reviews_with_threads(convo.reviews, convo.threads)
+        reviews_with_threads = self._combine_reviews_with_threads(
+            convo.reviews, convo.threads
+        )
 
         entries: list[ListEntry] = [
             *self._populate_threads(convo.threads, filters=filters),

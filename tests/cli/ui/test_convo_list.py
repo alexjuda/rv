@@ -86,6 +86,8 @@ class TestTextListConvoUI:
         @staticmethod
         def test_format_thread_with_replies(ui: TextListConvoUI):
             assert (
-                ui.format_summary(ThreadSummary(n_replies=5, reply_authors=["alice", "bob"]))
+                ui.format_summary(
+                    ThreadSummary(n_replies=5, reply_authors=["alice", "bob"])
+                )
                 == "+5 replies from @alice, @bob"
             )

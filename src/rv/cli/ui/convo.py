@@ -4,7 +4,12 @@ from rich.console import Console
 from rich.table import Table
 from rich.text import Text
 
-from ...domain.models.convo import ListEntry, ListEntryState, ThreadSummary, ReviewSummary
+from ...domain.models.convo import (
+    ListEntry,
+    ListEntryState,
+    ReviewSummary,
+    ThreadSummary,
+)
 
 
 class TextListConvoUI:

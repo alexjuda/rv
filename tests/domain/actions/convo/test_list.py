@@ -199,6 +199,7 @@ def full_pr_with_empty_body_review(
         ),
     )
 
+
 class TestListConvo:
     class TestErrors:
         @staticmethod
@@ -366,7 +367,6 @@ class TestListConvo:
             assert entry.summary.n_posted_threads == 2
             assert entry.summary.state == "approved"
 
-
     class TestAllFilter:
         @staticmethod
         async def test_shows_all_types(
@@ -385,4 +385,3 @@ class TestListConvo:
             assert len(entries) == 4
             ids = {e.id for e in entries}
             assert ids == {"1", "2", "3", "4"}
-

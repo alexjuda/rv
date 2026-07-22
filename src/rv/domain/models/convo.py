@@ -17,6 +17,7 @@ class ThreadSummary:
     n_replies: int
     reply_authors: list[str]
 
+
 @dataclass
 class ReviewSummary:
     n_posted_threads: int
