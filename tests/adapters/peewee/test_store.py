@@ -11,6 +11,7 @@ from rv.domain.models.github import (
     PRConversation,
     PRLocator,
     RepoLocator,
+    Review,
     Thread,
     ThreadComment,
 )
@@ -82,6 +83,7 @@ class TestPeeweeStore:
                             path="a.py",
                             line=1,
                             commit_sha="abc",
+                            review_id=None,
                             comments=[],
                         ),
                         Thread(
@@ -90,6 +92,7 @@ class TestPeeweeStore:
                             path="a.py",
                             line=2,
                             commit_sha="abc",
+                            review_id=None,
                             comments=[],
                         ),
                         Thread(
@@ -98,6 +101,7 @@ class TestPeeweeStore:
                             path="b.py",
                             line=1,
                             commit_sha="abc",
+                            review_id=None,
                             comments=[],
                         ),
                     ],
@@ -142,6 +146,7 @@ class TestPeeweeStore:
                             path="a.py",
                             line=1,
                             commit_sha="abc",
+                            review_id=None,
                             comments=[
                                 ThreadComment(
                                     id="c-1", body="x", author="me", created_at=now
@@ -223,3 +228,55 @@ class TestPeeweeStore:
             store.store_pr(sample_full_pr)
             loc = store.get_pr_locator_for_thread("PR_1")
             assert loc == sample_full_pr.pr.locator
+
+    class TestThreadReviewLink:
+        @staticmethod
+        def test_roundtrip_with_review_id(store: PeeweeStore):
+            now = datetime.fromisoformat("2024-01-01T13:34:12+01:00")
+            review = Review(
+                id="rv_1",
+                author="bob",
+                body="LGTM",
+                created_at=now,
+                state="approved",
+                commit="abc123",
+            )
+            thread = Thread(
+                id="t_linked",
+                is_resolved=False,
+                path="a.py",
+                line=10,
+                commit_sha="abc",
+                review_id="rv_1",
+                comments=[],
+            )
+            pr = FullPR(
+                pr=PR(
+                    locator=PRLocator(RepoLocator("owner", "repo"), 1),
+                    url="url",
+                    title="title",
+                    author="someone",
+                    base_branch="main",
+                    head_branch="feat",
+                    state="open",
+                    latest_commit="abc",
+                ),
+                convo=PRConversation(
+                    threads=[thread],
+                    pr_comments=[],
+                    reviews=[review],
+                ),
+            )
+            store.store_pr(pr)
+            stored = store.get_thread("t_linked")
+            assert stored is not None
+            assert stored.review_id == "rv_1"
+
+        @staticmethod
+        def test_roundtrip_without_review_id(
+            store: PeeweeStore, sample_full_pr: FullPR
+        ):
+            store.store_pr(sample_full_pr)
+            stored = store.get_thread("PR_1")
+            assert stored is not None
+            assert stored.review_id is None

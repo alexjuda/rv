@@ -102,7 +102,13 @@ class TestBuildEntry:
     @staticmethod
     def test_unresolved_threads_counted():
         thread = Thread(
-            id="1", is_resolved=False, path="x", line=1, commit_sha="c", comments=[]
+            id="1",
+            is_resolved=False,
+            path="x",
+            line=1,
+            commit_sha="c",
+            review_id=None,
+            comments=[],
         )
         entry = _build_entry(_stored(threads=[thread]))
         assert entry.n_unresolved_threads == 1
@@ -110,7 +116,13 @@ class TestBuildEntry:
     @staticmethod
     def test_resolved_threads_ignored():
         thread = Thread(
-            id="1", is_resolved=True, path="x", line=1, commit_sha="c", comments=[]
+            id="1",
+            is_resolved=True,
+            path="x",
+            line=1,
+            commit_sha="c",
+            review_id=None,
+            comments=[],
         )
         entry = _build_entry(_stored(threads=[thread]))
         assert entry.n_unresolved_threads == 0
@@ -119,13 +131,31 @@ class TestBuildEntry:
     def test_multiple_unresolved_threads_summed():
         threads = [
             Thread(
-                id="1", is_resolved=False, path="x", line=1, commit_sha="c", comments=[]
+                id="1",
+                is_resolved=False,
+                path="x",
+                line=1,
+                commit_sha="c",
+                review_id=None,
+                comments=[],
             ),
             Thread(
-                id="2", is_resolved=True, path="y", line=2, commit_sha="d", comments=[]
+                id="2",
+                is_resolved=True,
+                path="y",
+                line=2,
+                commit_sha="d",
+                review_id=None,
+                comments=[],
             ),
             Thread(
-                id="3", is_resolved=False, path="z", line=3, commit_sha="e", comments=[]
+                id="3",
+                is_resolved=False,
+                path="z",
+                line=3,
+                commit_sha="e",
+                review_id=None,
+                comments=[],
             ),
         ]
         entry = _build_entry(_stored(threads=threads))

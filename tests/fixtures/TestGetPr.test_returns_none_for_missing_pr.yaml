@@ -8,7 +8,7 @@ interactions:
       { oid }\n        }\n      }\n      reviewThreads(first: 100) {\n        nodes
       {\n          id\n          isResolved\n          path\n          line\n          comments(first:
       100) {\n            nodes {\n              id\n              body\n              author
-      { login }\n              createdAt\n            }\n          }\n        }\n      }\n    }\n  }\n}\n","variables":{"owner":"alexjuda","repo":"rv-testing","number":99999}}'
+      { login }\n              createdAt\n              pullRequestReview { id }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n","variables":{"owner":"alexjuda","repo":"rv-testing","number":99999}}'
     headers:
       Authorization:
       - Bearer <TOKEN>
@@ -19,7 +19,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1003'
+      - '1043'
       content-type:
       - application/json
       host:
@@ -45,12 +45,14 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Tue, 30 Jun 2026 09:49:59 GMT
+      - Tue, 21 Jul 2026 09:32:33 GMT
       github-authentication-token-expiration: 2021-01-01 09:01:01 UTC
       referrer-policy:
       - origin-when-cross-origin, strict-origin-when-cross-origin
       server:
       - github.com
+      strict-transport-security:
+      - max-age=31536000; includeSubdomains; preload
       transfer-encoding:
       - chunked
       vary:
@@ -62,17 +64,17 @@ interactions:
       x-github-media-type:
       - github.v4; format=json
       x-github-request-id:
-      - A57A:24265D:1C23807:1AAA8B6:6A439147
+      - A51E:249FC1:77736C3:710C6C8:6A5F3CB1
       x-ratelimit-limit:
       - '5000'
       x-ratelimit-remaining:
-      - '4982'
+      - '4990'
       x-ratelimit-reset:
-      - '1782814665'
+      - '1784629653'
       x-ratelimit-resource:
       - graphql
       x-ratelimit-used:
-      - '18'
+      - '10'
       x-xss-protection:
       - '0'
     status:

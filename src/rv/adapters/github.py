@@ -20,12 +20,12 @@ from ..domain.models.github import (
 )
 from ..domain.ports import Auth
 from .github_models import (
-    _GHFindPRData,
-    _GHFullPR,
-    _GHFullPRData,
-    _GHGraphQLEnvelope,
-    _GHPRListData,
-    _GHPRNode,
+    GHFindPRData,
+    GHFullPR,
+    GHFullPRData,
+    GHGraphQLEnvelope,
+    GHPRListData,
+    GHPRNode,
 )
 
 GRAPHQL_API = "https://api.github.com/graphql"
@@ -83,6 +83,7 @@ query($owner: String!, $repo: String!, $number: Int!) {
               body
               author { login }
               createdAt
+              pullRequestReview { id }
             }
           }
         }
@@ -144,7 +145,7 @@ class GitHub:
         )
         resp.raise_for_status()
         raw = resp.json()
-        envelope = _GHGraphQLEnvelope.model_validate(raw)
+        envelope = GHGraphQLEnvelope.model_validate(raw)
         if envelope.data is None:
             if envelope.errors:
                 msgs = "; ".join(e.message for e in envelope.errors)
@@ -168,11 +169,11 @@ class GitHub:
             FIND_PR_QUERY,
             {"owner": repo.owner, "repo": repo.repo, "branch": branch},
         )
-        parsed = _GHFindPRData.model_validate(data)
+        parsed = GHFindPRData.model_validate(data)
         if parsed.repository is None:
             return None
         prs = parsed.repository.pullRequests
-        if prs is None or not prs.nodes:
+        if not prs.nodes:
             return None
         return PRLocator(repo=repo, number=prs.nodes[0].number)
 
@@ -191,24 +192,21 @@ class GitHub:
                     "states": states,
                 },
             )
-            parsed = _GHPRListData.model_validate(data)
+            parsed = GHPRListData.model_validate(data)
             if parsed.repository is None:
                 break
             pull_requests = parsed.repository.pullRequests
-            if pull_requests is None:
-                break
             nodes = pull_requests.nodes or []
 
             prs.extend(self._to_domain_pr(repo, node) for node in nodes)
 
-            page_info = pull_requests.pageInfo
-            if page_info is None or not page_info.hasNextPage:
+            if not pull_requests.pageInfo.hasNextPage:
                 break
-            after = page_info.endCursor
+            after = pull_requests.pageInfo.endCursor
 
         return prs
 
-    def _to_domain_pr(self, repo: RepoLocator, node: _GHPRNode) -> PR:
+    def _to_domain_pr(self, repo: RepoLocator, node: GHPRNode) -> PR:
         return PR(
             locator=PRLocator(repo=repo, number=node.number),
             url=node.url,
@@ -225,7 +223,7 @@ class GitHub:
             GET_PR_QUERY,
             {"owner": pr.repo.owner, "repo": pr.repo.repo, "number": pr.number},
         )
-        parsed = _GHFullPRData.model_validate(data)
+        parsed = GHFullPRData.model_validate(data)
         if parsed.repository is None or parsed.repository.pullRequest is None:
             return None
         gh_pr = parsed.repository.pullRequest
@@ -247,17 +245,22 @@ class GitHub:
             ),
         )
 
-    def _build_threads(self, gh_pr: _GHFullPR) -> list[Thread]:
+    def _build_threads(self, gh_pr: GHFullPR) -> list[Thread]:
         threads = gh_pr.reviewThreads
-        if threads is None or threads.nodes is None:
+        if threads.nodes is None:
             return []
         return [
             Thread(
                 id=t.id,
-                is_resolved=t.isResolved or False,
+                is_resolved=t.isResolved,
                 path=t.path,
                 line=t.line,
                 commit_sha=gh_pr.headRefOid,
+                review_id=(
+                    t.comments.nodes[0].pullRequestReview.id
+                    if t.comments.nodes and t.comments.nodes[0].pullRequestReview
+                    else None
+                ),
                 comments=[
                     ThreadComment(
                         id=c.id,
@@ -265,17 +268,15 @@ class GitHub:
                         author=c.author.login if c.author else None,
                         created_at=datetime.fromisoformat(c.createdAt),
                     )
-                    for c in (
-                        t.comments.nodes if t.comments and t.comments.nodes else []
-                    )
+                    for c in (t.comments.nodes if t.comments.nodes else [])
                 ],
             )
             for t in threads.nodes
         ]
 
-    def _build_pr_comments(self, gh_pr: _GHFullPR) -> list[PRComment]:
+    def _build_pr_comments(self, gh_pr: GHFullPR) -> list[PRComment]:
         comments = gh_pr.comments
-        if comments is None or comments.nodes is None:
+        if comments.nodes is None:
             return []
         return [
             PRComment(
@@ -287,7 +288,7 @@ class GitHub:
             for c in comments.nodes
         ]
 
-    def _build_reviews(self, gh_pr: _GHFullPR) -> list[Review]:
+    def _build_reviews(self, gh_pr: GHFullPR) -> list[Review]:
         reviews = gh_pr.reviews
         if reviews is None or reviews.nodes is None:
             return []

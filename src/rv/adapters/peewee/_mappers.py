@@ -50,6 +50,7 @@ def thread_to_domain(t: ThreadModel) -> Thread:
         path=t.path,
         line=t.line,
         commit_sha=t.commit_sha,
+        review_id=t.review.id if t.review else None,
         comments=[thread_comment_to_domain(c) for c in t.comments],
     )
 

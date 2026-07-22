@@ -2,9 +2,13 @@ from collections.abc import Sequence
 
 from rich.console import Console
 from rich.table import Table
-from rich.text import Text
 
-from ...domain.models.convo import ListEntry, ListEntryState, ThreadSummary
+from ...domain.models.convo import (
+    ListEntry,
+    PRCommentSummary,
+    ReviewSummary,
+    ThreadSummary,
+)
 
 
 class TextListConvoUI:
@@ -15,40 +19,61 @@ class TextListConvoUI:
         table.add_column("ID")
         table.add_column("Location")
         table.add_column("Author")
-        table.add_column("State")
         table.add_column("Body")
-        table.add_column("Replies")
+        table.add_column("Summary")
 
         for entry in entries:
             table.add_row(
                 entry.id,
                 entry.location,
-                Text(entry.author) if entry.author is not None else Text("[deleted]"),
-                self._format_state(entry.state),
-                entry.body_excerpt[:60],
-                self._format_thread(entry.thread_summary),
+                entry.author or "(deleted)",
+                entry.body_excerpt,
+                self.format_summary(entry.summary),
             )
 
         console.print(table)
 
     @staticmethod
-    def _format_state(state: ListEntryState) -> str:
-        match state:
-            case None:
-                return ""
-            case "unresolved":
-                return "unresolved"
-            case "resolved":
-                return "resolved"
-            case "approved":
-                return "approved"
-            case "changes_requested":
-                return "changes requested"
-            case "commented":
-                return "commented"
+    def format_summary(
+        summary: ReviewSummary | ThreadSummary | PRCommentSummary,
+    ) -> str:
+        match summary:
+            case PRCommentSummary():
+                return "PR comment"
+            case ThreadSummary():
+                text = ""
 
-    @staticmethod
-    def _format_thread(thread_summary: ThreadSummary | None) -> str:
-        if thread_summary is None:
-            return ""
-        return f"{thread_summary.n_replies}"
+                if summary.is_resolved:
+                    text += "(resolved) "
+
+                if summary.n_replies <= 0:
+                    pass
+                elif (n := summary.n_replies) == 1:
+                    text += f"+{n} reply"
+                else:
+                    text += f"+{n} replies"
+
+                if len(summary.reply_authors) > 0:
+                    text += " from "
+                    text += ", ".join(f"@{a}" for a in summary.reply_authors)
+                return text
+            case ReviewSummary():
+                components = []
+
+                match summary.state:
+                    case "approved":
+                        components.append("accepted")
+                    case "changes_requested":
+                        components.append("requested changes")
+                    case "commented":
+                        if summary.comment_empty:
+                            components.append("reviewed")
+                        if not summary.comment_empty:
+                            components.append("commented")
+
+                if (n := summary.n_posted_threads) > 0:
+                    if n == 1:
+                        components.append(f"+{n} thread")
+                    else:
+                        components.append(f"+{n} threads")
+                return ", ".join(components)

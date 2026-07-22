@@ -15,13 +15,19 @@ class ThreadComment:
     created_at: datetime
 
 
+# TODO: review and collapse optionals. WTF.
+
+
 @dataclass
 class Thread:
     id: str  # opaque, provided by forge
     is_resolved: bool
-    path: str | None
+    path: str
     line: int | None
     commit_sha: str
+    # ID of the review that created this thread, if any.
+    # NULL means the thread was not created as part of a review.
+    review_id: str | None
     comments: list[ThreadComment]
 
 
@@ -39,6 +45,7 @@ type ReviewState = Literal["approved", "changes_requested", "commented"]
 @dataclass
 class Review:
     id: str  # opaque, provided by forge
+    # Author is empty if the account was deleted
     author: str | None
     body: str
     created_at: datetime
@@ -70,6 +77,7 @@ class PR:
     locator: PRLocator
     url: str
     title: str
+    # Author is empty if the account was deleted
     author: str | None
     base_branch: str
     head_branch: str

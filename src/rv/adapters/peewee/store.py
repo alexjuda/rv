@@ -95,7 +95,24 @@ class PeeweeStore:
                 row.save()
 
             ThreadModel.delete().where(ThreadModel.pr == row).execute()
+            ReviewModel.delete().where(ReviewModel.pr == row).execute()
+            if pr.convo.reviews:
+                ReviewModel.insert_many(
+                    [
+                        {
+                            "id": r.id,
+                            "pr": row.id,
+                            "author": r.author,
+                            "body": r.body,
+                            "created_at": r.created_at,
+                            "state": r.state,
+                            "commit": r.commit,
+                        }
+                        for r in pr.convo.reviews
+                    ]
+                ).execute()
             for t in pr.convo.threads:
+                review_row = ReviewModel.get_by_id(t.review_id) if t.review_id else None
                 thread_row = ThreadModel.create(
                     id=t.id,
                     pr=row,
@@ -103,6 +120,7 @@ class PeeweeStore:
                     path=t.path,
                     line=t.line,
                     commit_sha=t.commit_sha,
+                    review=review_row,
                 )
                 if t.comments:
                     ThreadCommentModel.insert_many(
@@ -130,23 +148,6 @@ class PeeweeStore:
                             "created_at": c.created_at,
                         }
                         for c in pr.convo.pr_comments
-                    ]
-                ).execute()
-
-            ReviewModel.delete().where(ReviewModel.pr == row).execute()
-            if pr.convo.reviews:
-                ReviewModel.insert_many(
-                    [
-                        {
-                            "id": r.id,
-                            "pr": row.id,
-                            "author": r.author,
-                            "body": r.body,
-                            "created_at": r.created_at,
-                            "state": r.state,
-                            "commit": r.commit,
-                        }
-                        for r in pr.convo.reviews
                     ]
                 ).execute()
 

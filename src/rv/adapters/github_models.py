@@ -1,46 +1,46 @@
 from pydantic import BaseModel
 
 
-class _GHErrorItem(BaseModel):
+class GHErrorItem(BaseModel):
     message: str
     type: str | None = None
     path: list[str] | None = None
 
 
-class _GHGraphQLEnvelope(BaseModel):
+class GHGraphQLEnvelope(BaseModel):
     data: dict | None = None
-    errors: list[_GHErrorItem] | None = None
+    errors: list[GHErrorItem] | None = None
 
 
-class _GHActor(BaseModel):
+class GHActor(BaseModel):
     login: str
 
 
-class _GHFindPRNode(BaseModel):
+class GHFindPRNode(BaseModel):
     number: int
 
 
-class _GHFindPRPullRequests(BaseModel):
-    nodes: list[_GHFindPRNode] | None = None
+class GHFindPRPullRequests(BaseModel):
+    nodes: list[GHFindPRNode] | None = None
 
 
-class _GHFindPRRepo(BaseModel):
-    pullRequests: _GHFindPRPullRequests | None = None
+class GHFindPRRepo(BaseModel):
+    pullRequests: GHFindPRPullRequests
 
 
-class _GHFindPRData(BaseModel):
-    repository: _GHFindPRRepo | None = None
+class GHFindPRData(BaseModel):
+    repository: GHFindPRRepo | None = None
 
 
-class _GHPageInfo(BaseModel):
+class GHPageInfo(BaseModel):
     hasNextPage: bool
     endCursor: str | None = None
 
 
-class _GHPRNode(BaseModel):
+class GHPRNode(BaseModel):
     number: int
     title: str
-    author: _GHActor | None = None
+    author: GHActor | None = None
     url: str
     baseRefName: str
     headRefName: str
@@ -48,86 +48,91 @@ class _GHPRNode(BaseModel):
     headRefOid: str
 
 
-class _GHPRListPullRequests(BaseModel):
-    nodes: list[_GHPRNode] | None = None
-    pageInfo: _GHPageInfo | None = None
+class GHPRListPullRequests(BaseModel):
+    nodes: list[GHPRNode] | None = None
+    pageInfo: GHPageInfo
 
 
-class _GHPRListRepo(BaseModel):
-    pullRequests: _GHPRListPullRequests | None = None
+class GHPRListRepo(BaseModel):
+    pullRequests: GHPRListPullRequests
 
 
-class _GHPRListData(BaseModel):
-    repository: _GHPRListRepo | None = None
+class GHPRListData(BaseModel):
+    repository: GHPRListRepo | None = None
 
 
 class _GHCommit(BaseModel):
     oid: str
 
 
-class _GHComment(BaseModel):
+class GHComment(BaseModel):
     id: str
-    author: _GHActor | None = None
+    author: GHActor | None = None
     body: str
     createdAt: str
 
 
-class _GHCommentConnection(BaseModel):
-    nodes: list[_GHComment] | None = None
+class GHCommentConnection(BaseModel):
+    nodes: list[GHComment] | None = None
 
 
-class _GHReview(BaseModel):
+class GHReview(BaseModel):
     id: str
-    author: _GHActor | None = None
+    author: GHActor | None = None
     body: str
     createdAt: str
     state: str
     commit: _GHCommit | None = None
 
 
-class _GHReviewConnection(BaseModel):
-    nodes: list[_GHReview] | None = None
+class GHReviewConnection(BaseModel):
+    nodes: list[GHReview] | None = None
 
 
-class _GHThreadComment(BaseModel):
+class GHReviewRef(BaseModel):
+    id: str
+
+
+class GHThreadComment(BaseModel):
     id: str
     body: str
-    author: _GHActor | None = None
+    author: GHActor | None = None
     createdAt: str
+    pullRequestReview: GHReviewRef | None = None
 
 
-class _GHThreadCommentConnection(BaseModel):
-    nodes: list[_GHThreadComment] | None = None
+class GHThreadCommentConnection(BaseModel):
+    nodes: list[GHThreadComment] | None = None
 
 
-class _GHReviewThread(BaseModel):
+class GHReviewThread(BaseModel):
     id: str
-    isResolved: bool | None = None
-    path: str | None = None
+    isResolved: bool
+    path: str
     line: int | None = None
-    comments: _GHThreadCommentConnection | None = None
+    comments: GHThreadCommentConnection
 
 
-class _GHReviewThreadConnection(BaseModel):
-    nodes: list[_GHReviewThread] | None = None
+class GHReviewThreadConnection(BaseModel):
+    nodes: list[GHReviewThread] | None = None
 
 
-class _GHFullPR(BaseModel):
+class GHFullPR(BaseModel):
     url: str
     title: str
-    author: _GHActor | None = None
+    author: GHActor | None = None
     baseRefName: str
     headRefName: str
     state: str
     headRefOid: str
-    comments: _GHCommentConnection | None = None
-    reviews: _GHReviewConnection | None = None
-    reviewThreads: _GHReviewThreadConnection | None = None
+    comments: GHCommentConnection
+    reviews: GHReviewConnection | None = None
+    reviewThreads: GHReviewThreadConnection
 
 
-class _GHFullPRRepo(BaseModel):
-    pullRequest: _GHFullPR | None = None
+class GHFullPRRepo(BaseModel):
+    pullRequest: GHFullPR | None = None
 
 
-class _GHFullPRData(BaseModel):
-    repository: _GHFullPRRepo | None = None
+class GHFullPRData(BaseModel):
+    repository: GHFullPRRepo | None = None

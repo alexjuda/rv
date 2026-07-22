@@ -16,7 +16,7 @@ from .ui.convo import TextListConvoUI
 from .ui.convo_show import RichShowConvoUI
 from .ui.show import TextCompleteIDsUI
 
-app = Typer()
+app = Typer(no_args_is_help=True)
 
 
 @app.command()

@@ -21,6 +21,7 @@ class TestRichShowConvoUI:
             path="src/main.py",
             line=42,
             commit_sha="abc123",
+            review_id=None,
             comments=[
                 ThreadComment(
                     id="c1",
@@ -50,6 +51,7 @@ class TestRichShowConvoUI:
             path="src/main.py",
             line=7,
             commit_sha="abc123",
+            review_id=None,
             comments=[
                 ThreadComment(
                     id="c1",

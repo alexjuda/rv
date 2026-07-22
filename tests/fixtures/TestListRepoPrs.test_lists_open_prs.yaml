@@ -43,7 +43,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Tue, 30 Jun 2026 09:50:00 GMT
+      - Tue, 21 Jul 2026 09:32:34 GMT
       github-authentication-token-expiration: 2021-01-01 09:01:01 UTC
       referrer-policy:
       - origin-when-cross-origin, strict-origin-when-cross-origin
@@ -62,17 +62,17 @@ interactions:
       x-github-media-type:
       - github.v4; format=json
       x-github-request-id:
-      - A4EC:5BBAD:1D8A197:1C16593:6A439147
+      - A54A:189A65:7941094:729B70D:6A5F3CB2
       x-ratelimit-limit:
       - '5000'
       x-ratelimit-remaining:
-      - '4981'
+      - '4989'
       x-ratelimit-reset:
-      - '1782814665'
+      - '1784629653'
       x-ratelimit-resource:
       - graphql
       x-ratelimit-used:
-      - '19'
+      - '11'
       x-xss-protection:
       - '0'
     status:

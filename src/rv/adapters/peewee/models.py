@@ -31,6 +31,20 @@ class PRModel(Model):
         indexes = ((("owner", "repo", "number"), True),)
 
 
+class ReviewModel(Model):
+    id = CharField(primary_key=True)
+    pr = ForeignKeyField(PRModel, backref="reviews", on_delete="CASCADE")
+    author = CharField(null=True)
+    body = TextField()
+    created_at = DateTimeField()
+    state = CharField()
+    commit = CharField(null=True)
+
+    class Meta:
+        database = db
+        table_name = "review"
+
+
 class ThreadModel(Model):
     id = CharField(primary_key=True)
     pr = ForeignKeyField(PRModel, backref="threads", on_delete="CASCADE")
@@ -38,6 +52,10 @@ class ThreadModel(Model):
     path = CharField(null=True)
     line = IntegerField(null=True)
     commit_sha = CharField()
+    # NULL means the thread was not created as part of a review.
+    review = ForeignKeyField(
+        ReviewModel, null=True, backref="threads", on_delete="SET NULL"
+    )
 
     class Meta:
         database = db
@@ -68,18 +86,4 @@ class PRCommentModel(Model):
         table_name = "pr_comment"
 
 
-class ReviewModel(Model):
-    id = CharField(primary_key=True)
-    pr = ForeignKeyField(PRModel, backref="reviews", on_delete="CASCADE")
-    author = CharField(null=True)
-    body = TextField()
-    created_at = DateTimeField()
-    state = CharField()
-    commit = CharField(null=True)
-
-    class Meta:
-        database = db
-        table_name = "review"
-
-
-MODELS = [PRModel, ThreadModel, ThreadCommentModel, PRCommentModel, ReviewModel]
+MODELS = [PRModel, ReviewModel, ThreadModel, ThreadCommentModel, PRCommentModel]

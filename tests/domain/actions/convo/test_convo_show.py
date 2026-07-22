@@ -31,6 +31,7 @@ class TestShowConvo:
             path="src/main.py",
             line=42,
             commit_sha="abc123",
+            review_id=None,
             comments=[
                 ThreadComment(
                     id="c1",
@@ -96,6 +97,7 @@ class TestShowConvo:
             path="src/main.py",
             line=42,
             commit_sha="abc123",
+            review_id=None,
             comments=[
                 ThreadComment(
                     id="c1",
@@ -132,6 +134,7 @@ class TestShowConvo:
             path="x.py",
             line=1,
             commit_sha="abc",
+            review_id=None,
             comments=[
                 ThreadComment(
                     id="c1",
@@ -165,6 +168,7 @@ class TestShowConvo:
             path="x.py",
             line=99,
             commit_sha="abc",
+            review_id=None,
             comments=[
                 ThreadComment(
                     id="c1",
